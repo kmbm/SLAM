@@ -6,7 +6,9 @@
 #include "AxiBram.h"
 #include "MotorController.h"
 #include <memory>
+#include <RunConfig.h>
 
+#ifdef MAIN
 int main()
 {
 	auto l_systemRunner = std::make_unique<Runner>();
@@ -27,3 +29,4 @@ int main()
 	return 0;
 }
 
+#endif
