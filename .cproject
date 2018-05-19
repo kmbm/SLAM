@@ -23,6 +23,8 @@
 								<option id="xilinx.gnu.both.asm.option.include.paths.542630838" name="Include Paths (-I)" superClass="xilinx.gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors/RF24}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors/}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors/Sensors}&quot;"/>
 								</option>
 								<inputType id="xilinx.gnu.assembler.input.923971170" superClass="xilinx.gnu.assembler.input"/>
 							</tool>
@@ -34,8 +36,9 @@
 								<option defaultValue="gnu.c.optimization.level.none" id="xilinx.gnu.compiler.option.optimization.level.9178646" name="Optimization Level" superClass="xilinx.gnu.compiler.option.optimization.level" valueType="enumerated"/>
 								<option id="xilinx.gnu.compiler.option.debugging.level.1270668788" name="Debug Level" superClass="xilinx.gnu.compiler.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 								<option id="xilinx.gnu.compiler.dircategory.includes.750910467" name="Include Paths" superClass="xilinx.gnu.compiler.dircategory.includes" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors/RF24}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors/Comunication}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors/}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors/Sensors}&quot;"/>
 								</option>
 								<option id="xilinx.gnu.compiler.misc.other.757389992" name="Other flags" superClass="xilinx.gnu.compiler.misc.other" value="-c -fmessage-length=0 -MT&quot;$@&quot; -std=c++14" valueType="string"/>
 								<inputType id="xilinx.gnu.armv7.linux.cxx.compiler.input.658992806" name="C++ source files" superClass="xilinx.gnu.armv7.linux.cxx.compiler.input"/>
@@ -43,7 +46,7 @@
 							<tool id="xilinx.gnu.armv7.linux.toolchain.archiver.432502972" name="ARM v7 Linux archiver" superClass="xilinx.gnu.armv7.linux.toolchain.archiver"/>
 							<tool id="xilinx.gnu.armv7.linux.c.toolchain.linker.debug.195395562" name="ARM v7 Linux gcc linker" superClass="xilinx.gnu.armv7.linux.c.toolchain.linker.debug"/>
 							<tool id="xilinx.gnu.armv7.linux.cxx.toolchain.linker.debug.1284378666" name="ARM v7 Linux g++ linker" superClass="xilinx.gnu.armv7.linux.cxx.toolchain.linker.debug">
-								<option id="xilinx.gnu.c.link.option.libs.358458626" superClass="xilinx.gnu.c.link.option.libs" valueType="libs">
+								<option id="xilinx.gnu.c.link.option.libs.358458626" name="Libraries (-l)" superClass="xilinx.gnu.c.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
 								<inputType id="xilinx.gnu.linker.input.1974092174" superClass="xilinx.gnu.linker.input">
@@ -80,6 +83,8 @@
 							<tool id="xilinx.gnu.armv7.linux.c.toolchain.assembler.release.732922796" name="ARM v7 Linux gcc assembler" superClass="xilinx.gnu.armv7.linux.c.toolchain.assembler.release">
 								<option id="xilinx.gnu.both.asm.option.include.paths.499453522" name="Include Paths (-I)" superClass="xilinx.gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors/RF24}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors/}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors/Sensors}&quot;"/>
 								</option>
 								<inputType id="xilinx.gnu.assembler.input.2074247528" superClass="xilinx.gnu.assembler.input"/>
 							</tool>
@@ -92,6 +97,8 @@
 								<option id="xilinx.gnu.compiler.option.debugging.level.629886513" name="Debug Level" superClass="xilinx.gnu.compiler.option.debugging.level" value="gnu.c.debugging.level.none" valueType="enumerated"/>
 								<option id="xilinx.gnu.compiler.dircategory.includes.769128888" name="Include Paths" superClass="xilinx.gnu.compiler.dircategory.includes" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors/RF24}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors/}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors/Sensors}&quot;"/>
 								</option>
 								<inputType id="xilinx.gnu.armv7.linux.cxx.compiler.input.1360233528" name="C++ source files" superClass="xilinx.gnu.armv7.linux.cxx.compiler.input"/>
 							</tool>
