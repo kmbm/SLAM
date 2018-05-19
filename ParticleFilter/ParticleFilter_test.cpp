@@ -25,6 +25,18 @@ ostream& printParticles(ostream& os, const vector<Particle>& p)
 	return os;
 }
 
+void validate(std::vector<Particle> particles, std::vector<Particle> expectedParticles)
+{
+	if(equal(particles.begin(), particles.end(), expectedParticles.begin()))
+	{
+		std::cout << "PASS" << std::endl;
+	}
+	else
+	{
+		std::cout << "FAIL" << std::endl;
+	}
+}
+
 struct EvolutionModel{
 	Particle evolve(const Particle& p){
 		Particle pn(p);
@@ -53,6 +65,7 @@ int main (unsigned int argc, const char * const * argv){
 	vector<Particle> particles(nparticles);
 	LikelyhoodModel likelyhoodModel;
 	uniform_resampler<Particle, double> resampler;
+	auxiliary_evolver <Particle, double, QualificationModel, EvolutionModel, LikelyhoodModel> auxevolver;
 	evolver <Particle, EvolutionModel> evolver;
 
 	int particle_val = 0;
@@ -62,19 +75,33 @@ int main (unsigned int argc, const char * const * argv){
 		++particle_val;
 	}
 	vector<Particle> sirparticles(particles);
-	vector<Particle> expectedparticles = {{2.14659, 3.17715},
-										  {1.94418, 7.62552},
-										  {2.1419, 3.31992},
-										  {1.83089, 2.59214},
-										  {2.17984, 2.3632},
-										  {1.84015, 2.81416},
-										  {7.82981, 1.28615},
-										  {8.30454, 0.489166},
-										  {8.132, 1.82587},
-										  {7.72165, 0.57462}};
+	vector<Particle> auxparticles(particles);
+	vector<Particle> expectedsirparticles = {{1.6218, 0.65467},
+											 {1.92439, 6.36401},
+											 {1.93078, 6.76207},
+										     {1.834, 2.664},
+										     {8.30738, 0.481052},
+										     {7.98231, 4.851},
+										     {8.23684, 0.759087},
+										     {7.73726, 0.635689},
+										     {8.26845, 0.611827},
+										     {8.17425, 1.24143}};
+
+
+	vector<Particle> expectedauxparticles = {{1.7211, 1.14042},
+											 {2.20117, 1.98289},
+											 {2.21673, 1.75671},
+										   	 {1.9477, 7.85379},
+											 {2.27017, 1.20648},
+											 {1.98984, 9.89915},
+											 {7.8323, 1.31446},
+											 {7.79228, 0.943745},
+											 {7.92298, 3.14116},
+											 {7.76618, 0.776133}};
 
 	int i = 0;
-	while (i < 3){
+	while (i < 3)
+	{
 	    ++i;
 		vector<Particle> newgeneration;
 
@@ -82,24 +109,32 @@ int main (unsigned int argc, const char * const * argv){
 		for (vector<Particle>::iterator it=sirparticles.begin(); it!=sirparticles.end(); it++){
 			it->setWeight(likelyhoodModel.likelyhood(*it));
 		}
-
 		ofstream os("sir.dat");
 		printParticles(os, sirparticles);
 		os.close();
 
-		if (i < 3)
+		if (i == 3)
 		{
-			newgeneration=resampler.resample(sirparticles);
-			sirparticles=newgeneration;
+			validate(sirparticles, expectedsirparticles);
 		}
-	}
-	if(equal(sirparticles.begin(), sirparticles.end(), expectedparticles.begin()))
-	{
-		std::cout << "PASS" << std::endl;
-	}
-	else
-	{
-		std::cout << "FAIL" << std::endl;
+
+		newgeneration=resampler.resample(sirparticles);
+		sirparticles=newgeneration;
+
+		auxevolver.evolve(auxparticles);
+		for (vector<Particle>::iterator it=auxparticles.begin(); it!=auxparticles.end(); it++){
+			it->setWeight(likelyhoodModel.likelyhood(*it));
+		}
+		os.open("aux.dat");
+		printParticles(os, auxparticles);
+		os.close();
+
+		if (i == 3)
+		{
+			validate(auxparticles, expectedauxparticles);
+		}
+		newgeneration=resampler.resample(auxparticles);
+		auxparticles=newgeneration;
 	}
 }
 

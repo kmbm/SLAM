@@ -9,8 +9,8 @@
 #define RUNCONFIG_H_
 
 
-#define MAIN
-//#define PARTICLE_FILTER_TEST
+//#define MAIN
+#define PARTICLE_FILTER_TEST
 
 
 #endif /* RUNCONFIG_H_ */
