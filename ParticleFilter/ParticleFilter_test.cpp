@@ -4,6 +4,8 @@
 #include <ParticleFilter/ParticleFilter.h>
 #include <RunConfig.h>
 
+#include <Utils/Point.h>
+
 using namespace std;
 
 
