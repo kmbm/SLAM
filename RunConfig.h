@@ -10,7 +10,8 @@
 
 
 //#define MAIN
-#define PARTICLE_FILTER_TEST
+#define GFS_MAIN
+//#define PARTICLE_FILTER_TEST
 
 
 #endif /* RUNCONFIG_H_ */

@@ -212,6 +212,7 @@ namespace GMapping {
 
     /**this sets the neff based resampling threshold*/
     double m_resampleThreshold;
+    double m_minimumScore;
 
     //state
     int  m_count, m_readingCount;
@@ -283,7 +284,7 @@ namespace GMapping {
 typedef std::multimap<const GridSlamProcessor::TNode*, GridSlamProcessor::TNode*> TNodeMultimap;
 
 
-//#include "gridslamprocessor.hxx"
+#include "GridSlamProcessor.hxx"
 
 };
 #endif /* GRIDFASTSLAM_GRIDSLAMPROCESSOR_H_ */

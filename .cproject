@@ -16,46 +16,47 @@
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 				<configuration artifactExtension="elf" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="" id="xilinx.gnu.armv7.linux.exe.debug.171307348" name="Debug" parent="xilinx.gnu.armv7.linux.exe.debug">
 					<folderInfo id="xilinx.gnu.armv7.linux.exe.debug.171307348." name="/" resourcePath="">
-						<toolChain id="xilinx.gnu.armv7.linux.exe.debug.toolchain.753558854" name="Xilinx ARM v7 GNU/Linux Toolchain" superClass="xilinx.gnu.armv7.linux.exe.debug.toolchain">
-							<targetPlatform binaryParser="com.xilinx.sdk.managedbuilder.XELF.arm.a53.x32.linux" id="xilinx.armv7.linux.target.gnu.base.debug.703735152" isAbstract="false" name="Debug Platform" superClass="xilinx.armv7.linux.target.gnu.base.debug"/>
-							<builder buildPath="${workspace_loc:/dfrobotSensors}/Debug" enableAutoBuild="true" id="xilinx.gnu.armv7.linux.toolchain.builder.debug.505384827" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="GNU make" superClass="xilinx.gnu.armv7.linux.toolchain.builder.debug"/>
-							<tool command="arm-linux-gnueabihf-gcc " id="xilinx.gnu.armv7.linux.c.toolchain.assembler.debug.757428594" name="ARM v7 Linux gcc assembler" superClass="xilinx.gnu.armv7.linux.c.toolchain.assembler.debug">
-								<option id="xilinx.gnu.both.asm.option.include.paths.542630838" name="Include Paths (-I)" superClass="xilinx.gnu.both.asm.option.include.paths" valueType="includePath">
+						<toolChain id="xilinx.gnu.armv7.linux.toolchain.1591220740" name="Xilinx ARM v7 GNU/Linux Toolchain" superClass="xilinx.gnu.armv7.linux.toolchain">
+							<targetPlatform binaryParser="com.xilinx.sdk.managedbuilder.XELF.arm.a53.x32.linux" id="xilinx.armv7.linux.target.gnu.base.2007564655" isAbstract="false" name="Debug Platform" superClass="xilinx.armv7.linux.target.gnu.base"/>
+							<builder buildPath="${workspace_loc:/dfrobotSensors}/Debug" enableAutoBuild="true" id="xilinx.gnu.armv7.linux.toolchain.builder.1457189353" keepEnvironmentInBuildfile="false" name="GNU make" superClass="xilinx.gnu.armv7.linux.toolchain.builder"/>
+							<tool id="xilinx.gnu.armv7.linux.c.toolchain.assembler.718577877" name="ARM v7 Linux gcc assembler" superClass="xilinx.gnu.armv7.linux.c.toolchain.assembler">
+								<option id="xilinx.gnu.both.asm.option.include.paths.1692628419" name="Include Paths (-I)" superClass="xilinx.gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors/RF24}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors/}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors/Sensors}&quot;"/>
 								</option>
-								<inputType id="xilinx.gnu.assembler.input.923971170" superClass="xilinx.gnu.assembler.input"/>
+								<inputType id="xilinx.gnu.assembler.input.368866542" superClass="xilinx.gnu.assembler.input"/>
 							</tool>
-							<tool id="xilinx.gnu.armv7.linux.c.toolchain.compiler.debug.168686180" name="ARM v7 Linux gcc compiler" superClass="xilinx.gnu.armv7.linux.c.toolchain.compiler.debug">
-								<option defaultValue="gnu.c.optimization.level.none" id="xilinx.gnu.compiler.option.optimization.level.132110348" name="Optimization Level" superClass="xilinx.gnu.compiler.option.optimization.level" valueType="enumerated"/>
-								<option id="xilinx.gnu.compiler.option.debugging.level.606644402" name="Debug Level" superClass="xilinx.gnu.compiler.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+							<tool id="xilinx.gnu.armv7.linux.c.toolchain.compiler.767973241" name="ARM v7 Linux gcc compiler" superClass="xilinx.gnu.armv7.linux.c.toolchain.compiler">
+								<option defaultValue="gnu.c.optimization.level.none" id="xilinx.gnu.compiler.option.optimization.level.1859934264" name="Optimization Level" superClass="xilinx.gnu.compiler.option.optimization.level" valueType="enumerated"/>
+								<option id="xilinx.gnu.compiler.option.debugging.level.1628271923" name="Debug Level" superClass="xilinx.gnu.compiler.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 							</tool>
-							<tool id="xilinx.gnu.armv7.linux.cxx.toolchain.compiler.debug.1564049427" name="ARM v7 Linux g++ compiler" superClass="xilinx.gnu.armv7.linux.cxx.toolchain.compiler.debug">
-								<option defaultValue="gnu.c.optimization.level.none" id="xilinx.gnu.compiler.option.optimization.level.9178646" name="Optimization Level" superClass="xilinx.gnu.compiler.option.optimization.level" valueType="enumerated"/>
-								<option id="xilinx.gnu.compiler.option.debugging.level.1270668788" name="Debug Level" superClass="xilinx.gnu.compiler.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
-								<option id="xilinx.gnu.compiler.dircategory.includes.750910467" name="Include Paths" superClass="xilinx.gnu.compiler.dircategory.includes" valueType="includePath">
+							<tool id="xilinx.gnu.armv7.linux.cxx.toolchain.compiler.2096907449" name="ARM v7 Linux g++ compiler" superClass="xilinx.gnu.armv7.linux.cxx.toolchain.compiler">
+								<option id="xilinx.gnu.compiler.dircategory.includes.456650016" name="Include Paths" superClass="xilinx.gnu.compiler.dircategory.includes" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors/Comunication}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors/}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/dfrobotSensors/Sensors}&quot;"/>
 								</option>
-								<option id="xilinx.gnu.compiler.misc.other.757389992" name="Other flags" superClass="xilinx.gnu.compiler.misc.other" value="-c -fmessage-length=0 -MT&quot;$@&quot; -std=c++14" valueType="string"/>
-								<inputType id="xilinx.gnu.armv7.linux.cxx.compiler.input.658992806" name="C++ source files" superClass="xilinx.gnu.armv7.linux.cxx.compiler.input"/>
+								<option defaultValue="gnu.c.optimization.level.none" id="xilinx.gnu.compiler.option.optimization.level.117953059" name="Optimization Level" superClass="xilinx.gnu.compiler.option.optimization.level" valueType="enumerated"/>
+								<option id="xilinx.gnu.compiler.option.debugging.level.718807278" name="Debug Level" superClass="xilinx.gnu.compiler.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+								<option id="xilinx.gnu.compiler.misc.other.1203997481" name="Other flags" superClass="xilinx.gnu.compiler.misc.other" value="-c -fmessage-length=0 -MT&quot;$@&quot; -std=c++14" valueType="string"/>
+								<inputType id="xilinx.gnu.armv7.linux.cxx.compiler.input.596873623" name="C++ source files" superClass="xilinx.gnu.armv7.linux.cxx.compiler.input"/>
 							</tool>
-							<tool id="xilinx.gnu.armv7.linux.toolchain.archiver.432502972" name="ARM v7 Linux archiver" superClass="xilinx.gnu.armv7.linux.toolchain.archiver"/>
-							<tool id="xilinx.gnu.armv7.linux.c.toolchain.linker.debug.195395562" name="ARM v7 Linux gcc linker" superClass="xilinx.gnu.armv7.linux.c.toolchain.linker.debug"/>
-							<tool id="xilinx.gnu.armv7.linux.cxx.toolchain.linker.debug.1284378666" name="ARM v7 Linux g++ linker" superClass="xilinx.gnu.armv7.linux.cxx.toolchain.linker.debug">
-								<option id="xilinx.gnu.c.link.option.libs.358458626" name="Libraries (-l)" superClass="xilinx.gnu.c.link.option.libs" valueType="libs">
+							<tool id="xilinx.gnu.armv7.linux.toolchain.archiver.1868532357" name="ARM v7 Linux archiver" superClass="xilinx.gnu.armv7.linux.toolchain.archiver"/>
+							<tool id="xilinx.gnu.armv7.linux.c.toolchain.linker.1302440179" name="ARM v7 Linux gcc linker" superClass="xilinx.gnu.armv7.linux.c.toolchain.linker"/>
+							<tool id="xilinx.gnu.armv7.linux.cxx.toolchain.linker.1662944729" name="ARM v7 Linux g++ linker" superClass="xilinx.gnu.armv7.linux.cxx.toolchain.linker">
+								<option id="xilinx.gnu.c.link.option.libs.837550696" name="Libraries (-l)" superClass="xilinx.gnu.c.link.option.libs" valueType="libs">
+									<listOptionValue builtIn="false" value="stdc++"/>
 									<listOptionValue builtIn="false" value="pthread"/>
+									<listOptionValue builtIn="false" value="m"/>
 								</option>
-								<inputType id="xilinx.gnu.linker.input.1974092174" superClass="xilinx.gnu.linker.input">
+								<inputType id="xilinx.gnu.linker.input.819084519" superClass="xilinx.gnu.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
 								</inputType>
-								<inputType id="xilinx.gnu.linker.input.lscript.1294455360" name="Linker Script" superClass="xilinx.gnu.linker.input.lscript"/>
+								<inputType id="xilinx.gnu.linker.input.lscript.607070987" name="Linker Script" superClass="xilinx.gnu.linker.input.lscript"/>
 							</tool>
-							<tool id="xilinx.gnu.armv7.linux.size.debug.651079831" name="ARM v7 Linux Print Size" superClass="xilinx.gnu.armv7.linux.size.debug"/>
 						</toolChain>
 					</folderInfo>
 				</configuration>
@@ -123,8 +124,20 @@
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="dfrobotSensors.xilinx.gnu.armv7.linux.exe.1792335915" name="Xilinx ARM v7 Linux Executable" projectType="xilinx.gnu.armv7.linux.exe"/>
 	</storageModule>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/dfrobotSensors"/>
+		</configuration>
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/dfrobotSensors"/>
+		</configuration>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="xilinx.gnu.armv7.linux.exe.debug.171307348;xilinx.gnu.armv7.linux.exe.debug.171307348.;xilinx.gnu.armlinux.cxx.toolchain.compiler.747746255;xilinx.gnu.armlinux.cxx.compiler.input.347751336">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.xilinx.managedbuilder.ui.ARMLinuxGCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="xilinx.gnu.armv7.linux.exe.release.1056077000;xilinx.gnu.armv7.linux.exe.release.1056077000.;xilinx.gnu.armv7.linux.cxx.toolchain.compiler.release.1067993155;xilinx.gnu.armv7.linux.cxx.compiler.input.1360233528">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.xilinx.managedbuilder.ui.ARMA53X32LinuxGCCManagedMakePerProjectProfileC"/>
 		</scannerConfigBuildInfo>
@@ -138,13 +151,4 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.xilinx.managedbuilder.ui.ARMA53X32LinuxGCCManagedMakePerProjectProfileC"/>
 		</scannerConfigBuildInfo>
 	</storageModule>
-	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="Debug">
-			<resource resourceType="PROJECT" workspacePath="/dfrobotSensors"/>
-		</configuration>
-		<configuration configurationName="Release">
-			<resource resourceType="PROJECT" workspacePath="/dfrobotSensors"/>
-		</configuration>
-	</storageModule>
-	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>
