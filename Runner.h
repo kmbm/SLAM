@@ -17,11 +17,12 @@
 
 class Runner {
 public:
-	Runner();
+	Runner(int&);
 	Runner(const std::shared_ptr<Gyroscope>&,
    		   const std::shared_ptr<Lidar>&,
 		   const std::shared_ptr<Bluetooth>&,
-		   const std::shared_ptr<ManualMotorController>&);
+		   const std::shared_ptr<ManualMotorController>&,
+		   int&);
 	std::thread lidarScan();
 	std::thread generateMap();
 	std::thread radioCommunication();
@@ -39,6 +40,8 @@ private:
 	std::shared_ptr<Bluetooth> m_bluetooth;
 	std::shared_ptr<ManualMotorController> m_motorController;
 	std::shared_ptr<MapGenerator> m_mapGenerator;
+
+	int& m_poseAngle;
 };
 
 #endif /* RUNNER_H_ */

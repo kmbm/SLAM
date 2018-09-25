@@ -30,6 +30,7 @@ using namespace std;
     m_obsSigmaGain=1;
     m_resampleThreshold=0.5;
     m_minimumScore=0.;
+    m_beams = 8;
   }
 
   GridSlamProcessor::GridSlamProcessor(const GridSlamProcessor& gsp)
@@ -243,7 +244,7 @@ void GridSlamProcessor::setMotionModelParameters
   }
 
 
-  void GridSlamProcessor::setSensorMap(const SensorMap& smap){
+  void GridSlamProcessor::setSensorMap(){
 
     /*
       Construct the angle table for the sensor
@@ -251,14 +252,15 @@ void GridSlamProcessor::setMotionModelParameters
       FIXME For now detect the readings of only the front laser, and assume its pose is in the center of the robot
     */
 
-    SensorMap::const_iterator laser_it=smap.find(std::string("FLASER"));
+   /* SensorMap::const_iterator laser_it=smap.find(std::string("FLASER"));
     if (laser_it==smap.end()){
       cerr << "Attempting to load the new carmen log format" << endl;
       laser_it=smap.find(std::string("ROBOTLASER1"));
       assert(laser_it!=smap.end());
     }
     const RangeSensor* rangeSensor=dynamic_cast<const RangeSensor*>((laser_it->second));
-    assert(rangeSensor && rangeSensor->beams().size());
+    assert(rangeSensor && rangeSensor->beams().size());*/
+	const RangeSensor* rangeSensor = new RangeSensor("laser", 8, 45, OrientedPoint(0.0, 0.0, 0.0), 0, 500);
 
     m_beams=static_cast<unsigned int>(rangeSensor->beams().size());
     double* angles=new double[rangeSensor->beams().size()];
@@ -324,7 +326,6 @@ void GridSlamProcessor::setMotionModelParameters
     if (!m_count){
       m_lastPartPose=m_odoPose=relPose;
     }
-
     //write the state of the reading and update all the particles using the motion model
     for (ParticleVector::iterator it=m_particles.begin(); it!=m_particles.end(); it++){
       OrientedPoint& pose(it->pose);
@@ -433,12 +434,14 @@ void GridSlamProcessor::setMotionModelParameters
 
 	updateTreeWeights(false);
 
-	if (m_infoStream){
-	  m_infoStream << "neff= " << m_neff  << endl;
+	if (m_infoStream)
+	{
+	    m_infoStream << "neff= " << m_neff  << endl;
 	}
-	if (m_outputStream.is_open()){
-	  m_outputStream << setiosflags(ios::fixed) << setprecision(6);
-	  m_outputStream << "NEFF " << m_neff << endl;
+	if (m_outputStream.is_open())
+	{
+		m_outputStream << setiosflags(ios::fixed) << setprecision(6);
+		m_outputStream << "NEFF " << m_neff << endl;
 	}
 	resample(plainReading, adaptParticles);
 
@@ -473,6 +476,7 @@ void GridSlamProcessor::setMotionModelParameters
       }
 
     }
+
     if (m_outputStream.is_open())
       m_outputStream << flush;
     m_readingCount++;

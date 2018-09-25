@@ -15,9 +15,9 @@
 namespace GMapping{
 
 class RangeSensor: public Sensor{
-	friend class Configuration;
-	friend class CarmenConfiguration;
-	friend class CarmenWrapper;
+//	friend class Configuration;
+//	friend class CarmenConfiguration;
+//	friend class CarmenWrapper;
 	public:
 		struct Beam{
 			OrientedPoint pose;	//pose relative to the center of the sensor

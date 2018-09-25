@@ -11,6 +11,7 @@
 #include <gridfastslam/gridslamprocessor.h>
 //#include <utils/orientedboundingbox.h>
 #include <configfile/configfile.h>
+#include "Runner.h"
 
 #include <unistd.h>
 #include <stdio.h>
@@ -165,13 +166,13 @@ int main(int argc, const char * const * argv){
 	//loads from the carmen wrapper the laser and robot settings
 	//SensorMap sensorMap=CarmenWrapper::sensorMap();
 	cerr << "Connected " << endl;
-	//processor->setSensorMap(sensorMap);
+	processor->setSensorMap();  //!!!!!!!!!!!!! - laser not set
 
 	//set the command line parameters
 	processor->setMatchingParameters(maxUrange, maxrange, sigma, kernelSize, lstep, astep, iterations, lsigma, ogain, lskip);
 	processor->setMotionModelParameters(srr, srt, str, stt);
 	processor->setUpdateDistances(linearUpdate, angularUpdate, resampleThreshold);
-	//processor->setgenerateMap(generateMap);
+	//processor->setgenerateMap(true); //!!!!!!!!
 	OrientedPoint initialPose(xmin+xmax/2, ymin+ymax/2, 0);
 
 
@@ -187,12 +188,25 @@ int main(int argc, const char * const * argv){
 
 	//this is the CORE LOOP;
 	RangeReading rr(0,0);
+
+	int p_poseAngle;
+	auto l_systemRunner = std::make_unique<Runner>(p_poseAngle);
+	std::thread GyroscopeThread(l_systemRunner->gyroscopeThread());
+	double i=0;
 	while (running){
 		//while (CarmenWrapper::getReading(rr)){
 		while (true){
-
+			sleep(1);
+			//RangeReading temp(0,0);
+			//rr = temp;
+			rr.setPose(OrientedPoint(i, 1.0, p_poseAngle));
+			rr.resize(8);/*
+			rr[0] = 1.0;
+			rr[1] = 1.0;
+			rr[2] = 4.0;
+			rr[3] = 5.0;*/
 			bool processed=processor->processScan(rr);
-
+			i+=10;
 			//this returns true when the algorithm effectively processes (the traveled path since the last processing is over a given threshold)
 			if (processed){
 				cerr << "PROCESSED" << endl;

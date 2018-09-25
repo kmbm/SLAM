@@ -7,9 +7,11 @@
 
 #include "Gyroscope.h"
 
-Gyroscope::Gyroscope(const std::shared_ptr<AxiBramDataProvider>& p_axiBramDataProvider)
+Gyroscope::Gyroscope(const std::shared_ptr<AxiBramDataProvider>& p_axiBramDataProvider,
+					 int& p_poseAngle)
 	: m_i2cConn("/dev/i2c-1"),
-	  m_axiBramDataProvider(p_axiBramDataProvider)
+	  m_axiBramDataProvider(p_axiBramDataProvider),
+	  m_poseAngle(p_poseAngle)
 {
 	m_i2cConn.setSlaveAddress(slaveAddress);
 	m_i2cConn.writeRegister(0x20,0b00001111);
@@ -88,8 +90,9 @@ void Gyroscope::update(){
 		m_robotOrientation = m_robotOrientation + m_zAxisAngle / m_lastAngleUpdate;
 		m_lastAngleUpdate = 0;
 	}
-	std::cout << "ANGLE: " << m_robotOrientation << std::endl;
+	//std::cout << "ANGLE: " << m_robotOrientation << std::endl;
 	m_axiBramDataProvider->setRobotOrientation(m_robotOrientation);
+	m_poseAngle = m_robotOrientation;
 }
 
 void Gyroscope::run()

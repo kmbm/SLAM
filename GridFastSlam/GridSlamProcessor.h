@@ -149,7 +149,7 @@ namespace GMapping {
     virtual ~GridSlamProcessor();
 
     //methods for accessing the parameters
-    void setSensorMap(const SensorMap& smap);
+    void setSensorMap();
     void init(unsigned int size, double xmin, double ymin, double xmax, double ymax, double delta,
 	      OrientedPoint initialPose=OrientedPoint(0,0,0));
     void setMatchingParameters(double urange, double range, double sigma, int kernsize, double lopt, double aopt,

@@ -17,7 +17,7 @@
 
 class Gyroscope {
 public:
-	Gyroscope(const std::shared_ptr<AxiBramDataProvider>&);
+	Gyroscope(const std::shared_ptr<AxiBramDataProvider>&, int&);
 	~Gyroscope();
 
 	void run();
@@ -35,6 +35,8 @@ private:
 	std::atomic<double> m_xAxisAngle;
 	std::atomic<double> m_yAxisAngle;
 	std::atomic<double> m_zAxisAngle;
+
+	int& m_poseAngle;
 
 	std::atomic<double> m_robotOrientation;
 
