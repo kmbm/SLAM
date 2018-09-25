@@ -9,12 +9,11 @@
 #define SENSORS_RANGESENSOR_H_
 
 #include <vector>
-#include <Sensor.h>
 #include <utils/point.h>
 
 namespace GMapping{
 
-class RangeSensor: public Sensor{
+class RangeSensor{// public Sensor{
 //	friend class Configuration;
 //	friend class CarmenConfiguration;
 //	friend class CarmenWrapper;

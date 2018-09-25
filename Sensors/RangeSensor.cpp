@@ -9,9 +9,9 @@
 
 namespace GMapping{
 
-RangeSensor::RangeSensor(std::string name): Sensor(name){}
+RangeSensor::RangeSensor(std::string name){}//: Sensor(name){}
 
-RangeSensor::RangeSensor(std::string name, unsigned int beams_num, double res, const OrientedPoint& position, double span, double maxrange):Sensor(name),
+RangeSensor::RangeSensor(std::string name, unsigned int beams_num, double res, const OrientedPoint& position, double span, double maxrange):
 	m_pose(position), m_beams(beams_num){
 	//double angle=-.5*res*beams_num;
 	double angle = 0;

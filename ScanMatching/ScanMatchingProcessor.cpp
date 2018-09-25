@@ -43,16 +43,16 @@ ScanMatcherProcessor::~ScanMatcherProcessor (){
 	//gsl_eigen_symmv_free(m_eigenspace);
 }
 
-
+/*
 void ScanMatcherProcessor::setSensorMap(const SensorMap& smap, std::string sensorName){
 	m_sensorMap=smap;
-
+*/
 	/*
 	 Construct the angle table for the sensor
 
 	 FIXME has to be extended to more than one laser...
 	*/
-
+/*
 	SensorMap::const_iterator laser_it=m_sensorMap.find(sensorName);
 	assert(laser_it!=m_sensorMap.end());
 	const RangeSensor* rangeSensor=dynamic_cast<const RangeSensor*>((laser_it->second));
@@ -67,7 +67,7 @@ void ScanMatcherProcessor::setSensorMap(const SensorMap& smap, std::string senso
 	delete [] angles;
 
 
-}
+}*/
 
 void ScanMatcherProcessor::init(){
 	m_first=true;
@@ -138,7 +138,7 @@ void ScanMatcherProcessor::processScan(const RangeReading & reading){
 	}
 */
 	double * plainReading = new double[m_beams];
-	reading.rawView(plainReading, m_map.getDelta());
+	// reading.rawView(plainReading, m_map.getDelta()); //!!!!!!!!!!ACHTUNG
 
 
 #ifdef SCANMATHCERPROCESSOR_DEBUG

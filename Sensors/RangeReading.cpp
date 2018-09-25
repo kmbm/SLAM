@@ -16,11 +16,14 @@ namespace GMapping{
 
 using namespace std;
 
-RangeReading::RangeReading(const RangeSensor* rs, double time):
-	SensorReading(rs,time){}
+RangeReading::RangeReading(const RangeSensor* rs, double time)
+	: m_rangeSensor(rs)
+{}
+//	SensorReading(rs,time){}
 
-RangeReading::RangeReading(unsigned int n_beams, const double* d, const RangeSensor* rs, double time):
-	SensorReading(rs,time){
+RangeReading::RangeReading(unsigned int n_beams, const double* d, const RangeSensor* rs, double time)
+//	SensorReading(rs,time){
+{
 	assert(n_beams==rs->beams().size());
 	resize(n_beams);
 	for (unsigned int i=0; i<size(); i++)
@@ -39,11 +42,11 @@ unsigned int RangeReading::rawView(double* v, double density) const{
 		Point lastPoint(0,0);
 		uint suppressed=0;
 		for (unsigned int i=0; i<size(); i++){
-			const RangeSensor* rs=dynamic_cast<const RangeSensor*>(getSensor());
-			assert(rs);
+			//const RangeSensor* rs=dynamic_cast<const RangeSensor*>(getSensor());
+			//assert(rs);
 			Point lp(
-				cos(rs->beams()[i].pose.theta)*(*this)[i],
-				sin(rs->beams()[i].pose.theta)*(*this)[i]);
+				cos(m_rangeSensor->beams()[i].pose.theta)*(*this)[i],
+				sin(m_rangeSensor->beams()[i].pose.theta)*(*this)[i]);
 			Point dp=lastPoint-lp;
 			double distance=sqrt(dp*dp);
 			if (distance<density){
@@ -71,11 +74,11 @@ unsigned int RangeReading::activeBeams(double density) const{
 	Point lastPoint(0,0);
 	uint suppressed=0;
 	for (unsigned int i=0; i<size(); i++){
-		const RangeSensor* rs=dynamic_cast<const RangeSensor*>(getSensor());
-		assert(rs);
+		//const RangeSensor* rs=dynamic_cast<const RangeSensor*>(getSensor());
+		//assert(rs);
 		Point lp(
-			cos(rs->beams()[i].pose.theta)*(*this)[i],
-			sin(rs->beams()[i].pose.theta)*(*this)[i]);
+			cos(m_rangeSensor->beams()[i].pose.theta)*(*this)[i],
+			sin(m_rangeSensor->beams()[i].pose.theta)*(*this)[i]);
 		Point dp=lastPoint-lp;
 		double distance=sqrt(dp*dp);
 		if (distance<density){
@@ -92,24 +95,24 @@ unsigned int RangeReading::activeBeams(double density) const{
 }
 
 std::vector<Point> RangeReading::cartesianForm(double maxRange) const{
-	const RangeSensor* rangeSensor=dynamic_cast<const RangeSensor*>(getSensor());
-	assert(rangeSensor && rangeSensor->beams().size());
+	//const RangeSensor* rangeSensor=dynamic_cast<const RangeSensor*>(getSensor());
+	assert(m_rangeSensor && m_rangeSensor->beams().size());
 	//	uint m_beams=rangeSensor->beams().size();
-	uint m_beams=static_cast<unsigned int>(rangeSensor->beams().size());
+	uint m_beams=static_cast<unsigned int>(m_rangeSensor->beams().size());
 	std::vector<Point> cartesianPoints(m_beams);
 	double px,py,ps,pc;
-	px=rangeSensor->getPose().x;
-	py=rangeSensor->getPose().y;
-	ps=sin(rangeSensor->getPose().theta);
-	pc=cos(rangeSensor->getPose().theta);
+	px=m_rangeSensor->getPose().x;
+	py=m_rangeSensor->getPose().y;
+	ps=sin(m_rangeSensor->getPose().theta);
+	pc=cos(m_rangeSensor->getPose().theta);
 	for (unsigned int i=0; i<m_beams; i++){
 		const double& rho=(*this)[i];
-		const double& s=rangeSensor->beams()[i].s;
-		const double& c=rangeSensor->beams()[i].c;
+		const double& s=m_rangeSensor->beams()[i].s;
+		const double& c=m_rangeSensor->beams()[i].c;
 		if (rho>=maxRange){
 			cartesianPoints[i]=Point(0,0);
 		} else {
-			Point p=Point(rangeSensor->beams()[i].pose.x+c*rho, rangeSensor->beams()[i].pose.y+s*rho);
+			Point p=Point(m_rangeSensor->beams()[i].pose.x+c*rho, m_rangeSensor->beams()[i].pose.y+s*rho);
 			cartesianPoints[i].x=px+pc*p.x-ps*p.y;
 			cartesianPoints[i].y=py+ps*p.x+pc*p.y;
 		}

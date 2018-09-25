@@ -22,7 +22,7 @@ class ScanMatcherProcessor{
   ScanMatcherProcessor (double xmin, double ymin, double xmax, double ymax, double delta, double patchdelta);
 		virtual ~ScanMatcherProcessor ();
 		virtual void processScan(const RangeReading & reading);
-		void setSensorMap(const SensorMap& smap, std::string sensorName="FLASER");
+		//void setSensorMap(const SensorMap& smap, std::string sensorName="FLASER");
 		void init();
 		void setMatchingParameters
 			(double urange, double range, double sigma, int kernsize, double lopt, double aopt, int iterations, bool computeCovariance=false);
@@ -36,7 +36,7 @@ class ScanMatcherProcessor{
 		ScanMatcher m_matcher;
 		bool m_computeCovariance;
 		bool m_first;
-		SensorMap m_sensorMap;
+		//SensorMap m_sensorMap;
 		double m_regScore, m_critScore;
 		unsigned int m_beams;
 		double m_maxMove;

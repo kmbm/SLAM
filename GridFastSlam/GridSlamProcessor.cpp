@@ -308,7 +308,7 @@ void GridSlamProcessor::setMotionModelParameters
     m_readingCount=0;
     m_linearDistance=m_angularDistance=0;
   }
-
+/*
   void GridSlamProcessor::processTruePos(const OdometryReading& o){
     const OdometrySensor* os=dynamic_cast<const OdometrySensor*>(o.getSensor());
     if (os && os->isIdeal() && m_outputStream){
@@ -317,7 +317,7 @@ void GridSlamProcessor::setMotionModelParameters
       m_outputStream << setiosflags(ios::fixed) << setprecision(6) << o.getPose().theta << " " <<  o.getTime() << endl;
     }
   }
-
+*/
 
   bool GridSlamProcessor::processScan(const RangeReading & reading, int adaptParticles){
 
@@ -338,7 +338,7 @@ void GridSlamProcessor::setMotionModelParameters
       m_outputStream << "ODOM ";
       m_outputStream << setiosflags(ios::fixed) << setprecision(3) << m_odoPose.x << " " << m_odoPose.y << " ";
       m_outputStream << setiosflags(ios::fixed) << setprecision(6) << m_odoPose.theta << " ";
-      m_outputStream << reading.getTime();
+      //m_outputStream << reading.getTime();
       m_outputStream << endl;
     }
     if (m_outputStream.is_open()){
@@ -349,7 +349,7 @@ void GridSlamProcessor::setMotionModelParameters
 	m_outputStream << setiosflags(ios::fixed) << setprecision(3) << pose.x << " " << pose.y << " ";
 	m_outputStream << setiosflags(ios::fixed) << setprecision(6) << pose.theta << " " << it-> weight << " ";
       }
-      m_outputStream << reading.getTime();
+     // m_outputStream << reading.getTime();
       m_outputStream << endl;
     }
 
@@ -421,7 +421,7 @@ void GridSlamProcessor::setMotionModelParameters
 	  }
 	  OrientedPoint p=reading.getPose();
 	  m_outputStream << setiosflags(ios::fixed) << setprecision(6);
-	  m_outputStream << p.x << " " << p.y << " " << p.theta << " " << reading.getTime()<< endl;
+	  //m_outputStream << p.x << " " << p.y << " " << p.theta << " " << reading.getTime()<< endl;
 	  m_outputStream << "SM_UPDATE "<< m_particles.size() << " ";
 	  for (ParticleVector::const_iterator it=m_particles.begin(); it!=m_particles.end(); it++){
 	    const OrientedPoint& pose=it->pose;

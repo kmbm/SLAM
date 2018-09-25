@@ -16,11 +16,11 @@
 #include <deque>
 #include <particlefilter/particlefilter.h>
 #include <utils/point.h>
-#include <Sensors/OdometryReading.h>
 //#include <log/sensorlog.h>
 #include <Sensors/RangeSensor.h>
 #include <Sensors/RangeReading.h>
 #include <ScanMatching/ScanMatcher.h>
+#include <map>
 #include "MotionModel.h"
 
 
@@ -158,7 +158,7 @@ namespace GMapping {
     void setUpdateDistances(double linear, double angular, double resampleThreshold);
 
     //the "core" algorithm
-    void processTruePos(const OdometryReading& odometry);
+    //void processTruePos(const OdometryReading& odometry);
     bool processScan(const RangeReading & reading, int adaptParticles=0);
 
     /**This method copies the state of the filter in a tree.

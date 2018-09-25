@@ -9,12 +9,11 @@
 #define SENSORS_RANGEREADING_H_
 
 #include <vector>
-#include <SensorReading.h>
 #include "rangesensor.h"
 
 namespace GMapping{
 
-class RangeReading: public SensorReading, public std::vector<double>{
+class RangeReading: /*public SensorReading,*/ public std::vector<double>{
 	public:
 		RangeReading(const RangeSensor* rs, double time=0);
 		RangeReading(unsigned int n_beams, const double* d, const RangeSensor* rs, double time=0);
@@ -26,6 +25,7 @@ class RangeReading: public SensorReading, public std::vector<double>{
 		unsigned int activeBeams(double density=0.) const;
 	protected:
 		OrientedPoint m_pose;
+		const RangeSensor* m_rangeSensor;
 };
 
 };
