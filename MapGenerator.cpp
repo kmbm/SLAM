@@ -21,7 +21,7 @@ void MapGenerator::run()
 	while(1)
 	{
 		m_axiBramDataProvider->transferData();
-		RobotPosition l_position = m_axiBramDataProvider->getPosition();
+		//RobotPosition l_position = m_axiBramDataProvider->getPosition();
 		//std::cout << l_position;
 		//std::cout << "gyro: " << m_gyro->getTemperature() << " " << m_gyro->getXAxisAngle() << " "
 			//	  << m_gyro->getYAxisAngle() << " " << m_gyro->getZAxisAngle() << std::endl;

@@ -10,11 +10,22 @@
 
 #include <atomic>
 
+struct RobotCoordinates
+{
+	double x;
+	double y;
+};
+
 struct RobotPose{
 	void setAngle(int p_angle) { angle = p_angle; }
+	void setCoordinates(RobotCoordinates p_robotCoordinates)
+	{
+		x = p_robotCoordinates.x;
+		y = p_robotCoordinates.y;
+	}
 
-	int x;
-	int y ;
+	double x;
+	double y ;
 	int angle;
 };
 

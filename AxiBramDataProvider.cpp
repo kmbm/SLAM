@@ -7,10 +7,11 @@
 
 #include <AxiBramDataProvider.h>
 
-AxiBramDataProvider::AxiBramDataProvider() :
+AxiBramDataProvider::AxiBramDataProvider(std::shared_ptr<SensorsDataStorage>& p_sensorsDataStorage) :
 	m_axiBram(std::make_shared<AxiBram>()),
 	m_motorController(std::make_shared<MotorController>(m_axiBram)),
-	m_direction(FORWARD)
+	m_direction(FORWARD),
+	m_sensorsDataStorage(p_sensorsDataStorage)
 {}
 /*
 void AxiBramDataProvider::setDirection(RobotDirection p_direction)
@@ -41,7 +42,7 @@ void AxiBramDataProvider::transferData()
 
 int AxiBramDataProvider::readPosition()
 {
-	RobotPosition l_lastDelta = countPositionDelta(m_currentPosition, m_previousPosition);
+	RobotCoordinates l_lastDelta = countPositionDelta(m_currentPosition, m_previousPosition);
 	usleep(500000);
 	m_previousPosition = m_currentPosition;
 	m_currentPosition.x = readData(BRAM_POSITION_X_ADDRESS);
@@ -60,6 +61,9 @@ int AxiBramDataProvider::readPosition()
 
 	}
 	std::cout << m_currentPosition << std::endl;
+	m_mutex.lock();
+	m_sensorsDataStorage->getRobotPose().setCoordinates(m_currentPosition);
+	m_mutex.unlock();
 }
 
 int AxiBramDataProvider::readData(int p_startAddress)
@@ -84,9 +88,9 @@ int AxiBramDataProvider::buffToInteger(char * p_buffer)
     return l_result;
 }
 
-RobotPosition AxiBramDataProvider::countPositionDelta(const RobotPosition& p_lhs, const RobotPosition& p_rhs)
+RobotCoordinates AxiBramDataProvider::countPositionDelta(const RobotCoordinates& p_lhs, const RobotCoordinates& p_rhs)
 {
-	RobotPosition l_delta;
+	RobotCoordinates l_delta;
 	l_delta.x = p_lhs.x - p_rhs.y;
 	l_delta.y = p_lhs.y - p_rhs.y;
 

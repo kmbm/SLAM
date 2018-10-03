@@ -9,7 +9,7 @@
 #include "AxiBramDataProvider.h"
 
 Runner::Runner(std::shared_ptr<SensorsDataStorage>& p_sensorsDataStorage) :
-	m_axiBramDataProvider(std::make_shared<AxiBramDataProvider>()),
+	m_axiBramDataProvider(std::make_shared<AxiBramDataProvider>(p_sensorsDataStorage)),
 	m_gyro(std::make_shared<Gyroscope>(m_axiBramDataProvider, p_sensorsDataStorage)),
 	m_lidar(std::make_shared<Lidar>()),
 	m_bluetooth(std::make_shared<Bluetooth>()),

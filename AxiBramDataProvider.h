@@ -10,17 +10,15 @@
 
 #include "AxiBram.h"
 #include "MotorController.h"
+#include "SensorsDataStorage.h"
 #include <memory>
 #include <atomic>
+#include <mutex>
 #include <iostream>
 
-struct RobotPosition
-{
-	double x;
-	double y;
-};
 
-inline std::ostream& operator<<(std::ostream& os, const RobotPosition& data)
+
+inline std::ostream& operator<<(std::ostream& os, const RobotCoordinates& data)
 {
 	std::cout.precision(10);
     os << "Robot Position: x = " << data.x << " y = " << data.y << std::endl;
@@ -36,16 +34,16 @@ const int BRAM_ROTATION_ADDRESS = 1036;
 
 class AxiBramDataProvider {
 public:
-	AxiBramDataProvider();
+	AxiBramDataProvider(std::shared_ptr<SensorsDataStorage>&);
 
 	void transferData();
 
 	//void setDirection(RobotDirection p_direction);
 	void setRobotOrientation(double);
-	RobotPosition getPosition(){ return m_currentPosition; }
+	RobotCoordinates getPosition(){ return m_currentPosition; }
 
 private:
-	RobotPosition countPositionDelta(const RobotPosition&, const RobotPosition&);
+	RobotCoordinates countPositionDelta(const RobotCoordinates&, const RobotCoordinates&);
 	int readData(int p_startAddress);
 	int readPosition();
 	int buffToInteger(char * p_buffer);
@@ -53,11 +51,14 @@ private:
 
 	std::shared_ptr<AxiBram> m_axiBram;
 	std::shared_ptr<MotorController> m_motorController;
+	std::shared_ptr<SensorsDataStorage>& m_sensorsDataStorage;
+	std::mutex m_mutex;
+
 	RobotDirection m_direction;
 	int m_robotSpeed;
 	int m_robotRotation;
-	RobotPosition m_currentPosition;
-	RobotPosition m_previousPosition;
+	RobotCoordinates m_currentPosition;
+	RobotCoordinates m_previousPosition;
 };
 
 #endif /* AXIBRAMDATAPROVIDER_H_ */
