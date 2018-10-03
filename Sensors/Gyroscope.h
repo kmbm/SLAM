@@ -9,15 +9,17 @@
 #define GYROSCOPE_H_
 
 #include "AxiBramDataProvider.h"
+#include "SensorsDataStorage.h"
 #include "I2Cmaster.h"
 #include <atomic>
+#include <mutex>
 #include <list>
 #include <chrono>
 
 
 class Gyroscope {
 public:
-	Gyroscope(const std::shared_ptr<AxiBramDataProvider>&, int&);
+	Gyroscope(const std::shared_ptr<AxiBramDataProvider>&, std::shared_ptr<SensorsDataStorage>&);
 	~Gyroscope();
 
 	void run();
@@ -27,7 +29,6 @@ public:
 	double getXAxisAngle(){return m_xAxisAngle;}
 	double getYAxisAngle(){return m_yAxisAngle;}
 	double getZAxisAngle(){return m_robotOrientation;}
-	//double getZAxisAngle(){return m_zAxisAngle;}
 
 private:
 	std::shared_ptr<AxiBramDataProvider> m_axiBramDataProvider;
@@ -36,9 +37,10 @@ private:
 	std::atomic<double> m_yAxisAngle;
 	std::atomic<double> m_zAxisAngle;
 
-	int& m_poseAngle;
+	std::shared_ptr<SensorsDataStorage>& m_sensorsDataStorage;
 
 	std::atomic<double> m_robotOrientation;
+	std::mutex m_mutex;
 
 	std::list<std::pair<std::chrono::duration<double>, double>> m_zAxisCircullarBuffer;
 	double m_zAxisSum = 0;

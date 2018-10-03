@@ -8,7 +8,6 @@
 #include <Lidar.h>
 
 Lidar::Lidar():uartHost("/dev/ttyUL2") {
-	m_distanceVector.resize(10);
 	//stop();
 	//usleep(1000);
 }

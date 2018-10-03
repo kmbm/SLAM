@@ -57,7 +57,6 @@ public:
 	void reset();
 	void scan();
 	void getScanResponse();
-	std::vector<int> getDistanceVector(){return m_distanceVector;}
 
 private:
 	UartDriver uartHost;
@@ -71,7 +70,6 @@ private:
 	static const char resetReq = 0x40;
 	static const unsigned char scanReq = 0x20;
 	std::map<LidarPosition, LidarDataResponse> m_neighborhoodScanVector;
-	std::vector<int> m_distanceVector;
 };
 
 #endif /* LIDAR_H_ */

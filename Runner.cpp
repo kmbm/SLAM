@@ -8,16 +8,16 @@
 #include <Runner.h>
 #include "AxiBramDataProvider.h"
 
-Runner::Runner(int& p_poseAngle) :
+Runner::Runner(std::shared_ptr<SensorsDataStorage>& p_sensorsDataStorage) :
 	m_axiBramDataProvider(std::make_shared<AxiBramDataProvider>()),
-	m_gyro(std::make_shared<Gyroscope>(m_axiBramDataProvider, p_poseAngle)),
+	m_gyro(std::make_shared<Gyroscope>(m_axiBramDataProvider, p_sensorsDataStorage)),
 	m_lidar(std::make_shared<Lidar>()),
 	m_bluetooth(std::make_shared<Bluetooth>()),
 	m_motorController(std::make_shared<ManualMotorController>()),
 	m_mapGenerator(std::make_shared<MapGenerator>(m_axiBramDataProvider,
 												  m_lidar,
 												  m_gyro)),
-	m_poseAngle(p_poseAngle)
+	m_sensorsDataStorage(p_sensorsDataStorage)
 {}
 
 std::thread Runner::generateMap()

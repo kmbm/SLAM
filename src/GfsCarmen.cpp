@@ -12,28 +12,13 @@
 //#include <utils/orientedboundingbox.h>
 #include <configfile/configfile.h>
 #include "Runner.h"
+#include "SystemParameters.h"
 
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #define DEBUG cout << __PRETTY_FUNCTION__
-
-/*
-Example file for interfacing carmen, and gfs.
-
-if you want to look for a specific topic search for one of the following keywords in the file comments
-
-KEYWORDS:
-	CREATION
-	INITIALIZATION
-	SENSOR MAP
-	BEST PARTICLE INDEX
-	PARTICLE VECTOR
-	PARTICLE TRAJECTORIES
-	BEST MAP
- 	BOUNDING BOX
-*/
 
 using namespace GMapping;
 using namespace std;
@@ -42,39 +27,6 @@ using namespace std;
 
 int main(int argc, const char * const * argv){
 
-	std::string outfilename="";
-	double xmin=-100.;
-	double ymin=-100.;
-	double xmax=100.;
-	double ymax=100.;
-	double delta=0.05;
-
-	//scan matching parameters
-	double sigma=0.05;
-	double maxrange=80.;
-	double maxUrange=80.;
-	double regscore=1e4;
-	double lstep=.05;
-	double astep=.05;
-	int kernelSize=1;
-	int iterations=5;
-	double critscore=0.;
-	double maxMove=1.;
-	double lsigma=.075;
-	double ogain=3;
-	int lskip=0;
-
-	//motion model parameters
-	double srr=0.01, srt=0.01, str=0.01, stt=0.01;
-	//particle parameters
-	int particles=30;
-
-
-	//gfs parameters
-	double angularUpdate=0.5;
-	double linearUpdate=1;
-	double resampleThreshold=0.5;
-	bool generateMap=true;
 
 
 	//CarmenWrapper::initializeIPC(argv[0]);
@@ -116,8 +68,8 @@ int main(int argc, const char * const * argv){
 	//this is the CORE LOOP;
 	RangeReading rr(0,0);
 
-	int p_poseAngle;
-	auto l_systemRunner = std::make_unique<Runner>(p_poseAngle);
+	std::shared_ptr<SensorsDataStorage> l_sensorsDataStorage;
+	auto l_systemRunner = std::make_unique<Runner>(l_sensorsDataStorage);
 	std::thread GyroscopeThread(l_systemRunner->gyroscopeThread());
 	double i=0;
 	while (running){
@@ -126,7 +78,9 @@ int main(int argc, const char * const * argv){
 			sleep(1);
 			//RangeReading temp(0,0);
 			//rr = temp;
-			rr.setPose(OrientedPoint(i, 1.0, p_poseAngle));
+			//rr.setPose(OrientedPoint(i, 1.0, p_poseAngle));
+			auto l_robotPose = l_sensorsDataStorage->getRobotPose();
+			rr.setPose(OrientedPoint(l_robotPose.x, l_robotPose.y, l_robotPose.angle));
 			rr.resize(8);/*
 			rr[0] = 1.0;
 			rr[1] = 1.0;

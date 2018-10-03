@@ -54,7 +54,7 @@ template <class T, class A>
 struct orientedpoint: public point<T>{
   inline orientedpoint() : point<T>(0,0), theta(0) {};
 	inline orientedpoint(const point<T>& p);
-	inline orientedpoint(T x, T y, A _theta): point<T>(x,y), theta(_theta){}
+	inline orientedpoint(T x, T y, A _theta): point<T>(x,y), theta(_theta){};
         inline void normalize();
 	inline orientedpoint<T,A> rotate(A alpha){
 		T s=sin(alpha), c=cos(alpha);
