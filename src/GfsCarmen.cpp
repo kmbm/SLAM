@@ -62,9 +62,6 @@ int main(int argc, const char * const * argv){
 
 	bool running=true;
 
-	GridSlamProcessor* ap, *copy=processor->clone();
-	ap=processor; processor=copy; copy=ap;
-
 	//this is the CORE LOOP;
 	RangeReading rr(0,0);
 

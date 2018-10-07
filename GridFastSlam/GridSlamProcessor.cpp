@@ -246,12 +246,6 @@ void GridSlamProcessor::setMotionModelParameters
 
   void GridSlamProcessor::setSensorMap(){
 
-    /*
-      Construct the angle table for the sensor
-
-      FIXME For now detect the readings of only the front laser, and assume its pose is in the center of the robot
-    */
-
    /* SensorMap::const_iterator laser_it=smap.find(std::string("FLASER"));
     if (laser_it==smap.end()){
       cerr << "Attempting to load the new carmen log format" << endl;
