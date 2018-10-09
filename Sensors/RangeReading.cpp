@@ -25,15 +25,17 @@ RangeReading::RangeReading(unsigned int n_beams, const double* d, const RangeSen
 //	SensorReading(rs,time){
 {
 	assert(n_beams==rs->beams().size());
-	resize(n_beams);
-	for (unsigned int i=0; i<size(); i++)
-		(*this)[i]=d[i];
+	m_scanReading.resize(n_beams);
+	for (size_t i=0; i < m_scanReading.size(); ++i)
+	{
+		m_scanReading[i] = d[i];
+	}
 }
 
 RangeReading::~RangeReading(){
 //	cerr << __PRETTY_FUNCTION__ << ": CAZZZZZZZZZZZZZZZZZZZZOOOOOOOOOOO" << endl;
 }
-
+/*
 unsigned int RangeReading::rawView(double* v, double density) const{
 	if (density==0){
 		for (unsigned int i=0; i<size(); i++)
@@ -65,20 +67,20 @@ unsigned int RangeReading::rawView(double* v, double density) const{
 	//	return size();
 	return static_cast<unsigned int>(size());
 
-};
+};*/
 
 unsigned int RangeReading::activeBeams(double density) const{
 	if (density==0.)
-		return size();
+		return m_scanReading.size();
 		int ab=0;
 	Point lastPoint(0,0);
 	uint suppressed=0;
-	for (unsigned int i=0; i<size(); i++){
+	for (unsigned int i=0; i<m_scanReading.size(); i++){
 		//const RangeSensor* rs=dynamic_cast<const RangeSensor*>(getSensor());
 		//assert(rs);
 		Point lp(
-			cos(m_rangeSensor->beams()[i].pose.theta)*(*this)[i],
-			sin(m_rangeSensor->beams()[i].pose.theta)*(*this)[i]);
+			cos(m_rangeSensor->beams()[i].pose.theta)*m_scanReading[i],
+			sin(m_rangeSensor->beams()[i].pose.theta)*m_scanReading[i]);
 		Point dp=lastPoint-lp;
 		double distance=sqrt(dp*dp);
 		if (distance<density){
@@ -106,7 +108,7 @@ std::vector<Point> RangeReading::cartesianForm(double maxRange) const{
 	ps=sin(m_rangeSensor->getPose().theta);
 	pc=cos(m_rangeSensor->getPose().theta);
 	for (unsigned int i=0; i<m_beams; i++){
-		const double& rho=(*this)[i];
+		const double& rho=m_scanReading[i];
 		const double& s=m_rangeSensor->beams()[i].s;
 		const double& c=m_rangeSensor->beams()[i].c;
 		if (rho>=maxRange){

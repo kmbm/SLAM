@@ -149,7 +149,7 @@ namespace GMapping {
     virtual ~GridSlamProcessor();
 
     //methods for accessing the parameters
-    void setSensorMap();
+    void setSensorMap(const RangeSensor*);
     void init(unsigned int size, double xmin, double ymin, double xmax, double ymax, double delta,
 	      OrientedPoint initialPose=OrientedPoint(0,0,0));
     void setMatchingParameters(double urange, double range, double sigma, int kernsize, double lopt, double aopt,
@@ -265,12 +265,12 @@ namespace GMapping {
   private:
 
     /**scanmatches all the particles*/
-    inline void scanMatch(const double *plainReading);
+    inline void scanMatch(const std::vector<double> plainReading);
     /**normalizes the particle weights*/
     inline void normalize();
 
     // return if a resampling occured or not
-    inline bool resample(const double* plainReading, int adaptParticles,
+    inline bool resample(const std::vector<double> plainReading, int adaptParticles,
 			 const RangeReading* rr=0);
 
     //tree utilities

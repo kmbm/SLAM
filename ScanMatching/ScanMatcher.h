@@ -13,6 +13,7 @@
 //#include <utils/macro_params.h>
 #include <Utils/Stat.h>
 #include <iostream>
+#include <vector>
 
 #define LASER_MAXBEAMS 1024
 
@@ -23,23 +24,23 @@ class ScanMatcher{
 		typedef Covariance3 CovarianceMatrix;
 
 		ScanMatcher();
-		double icpOptimize(OrientedPoint& pnew, const ScanMatcherMap& map, const OrientedPoint& p, const double* readings) const;
-		double optimize(OrientedPoint& pnew, const ScanMatcherMap& map, const OrientedPoint& p, const double* readings) const;
-		double optimize(OrientedPoint& mean, CovarianceMatrix& cov, const ScanMatcherMap& map, const OrientedPoint& p, const double* readings) const;
+		double icpOptimize(OrientedPoint& pnew, const ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings) const;
+		double optimize(OrientedPoint& pnew, const ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings) const;
+		double optimize(OrientedPoint& mean, CovarianceMatrix& cov, const ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings) const;
 
-		double   registerScan(ScanMatcherMap& map, const OrientedPoint& p, const double* readings);
+		double registerScan(ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings);
 		void setLaserParameters
 			(unsigned int beams, double* angles, const OrientedPoint& lpose);
 		void setMatchingParameters
 			(double urange, double range, double sigma, int kernsize, double lopt, double aopt, int iterations, double likelihoodSigma=1, unsigned int likelihoodSkip=0 );
 		void invalidateActiveArea();
-		void computeActiveArea(ScanMatcherMap& map, const OrientedPoint& p, const double* readings);
+		void computeActiveArea(ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings);
 
-		inline double icpStep(OrientedPoint & pret, const ScanMatcherMap& map, const OrientedPoint& p, const double* readings) const;
-		inline double score(const ScanMatcherMap& map, const OrientedPoint& p, const double* readings) const;
-		inline unsigned int likelihoodAndScore(double& s, double& l, const ScanMatcherMap& map, const OrientedPoint& p, const double* readings) const;
-		double likelihood(double& lmax, OrientedPoint& mean, CovarianceMatrix& cov, const ScanMatcherMap& map, const OrientedPoint& p, const double* readings);
-		double likelihood(double& _lmax, OrientedPoint& _mean, CovarianceMatrix& _cov, const ScanMatcherMap& map, const OrientedPoint& p, Gaussian3& odometry, const double* readings, double gain=180.);
+		inline double icpStep(OrientedPoint & pret, const ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings) const;
+		inline double score(const ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings) const;
+		inline unsigned int likelihoodAndScore(double& s, double& l, const ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings) const;
+		double likelihood(double& lmax, OrientedPoint& mean, CovarianceMatrix& cov, const ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings);
+		double likelihood(double& _lmax, OrientedPoint& _mean, CovarianceMatrix& _cov, const ScanMatcherMap& map, const OrientedPoint& p, Gaussian3& odometry, const std::vector<double> readings, double gain=180.);
 		inline const double* laserAngles() const { return m_laserAngles; }
 		inline unsigned int laserBeams() const { return m_laserBeams; }
 
@@ -77,7 +78,7 @@ class ScanMatcher{
 		unsigned int m_initialBeamsSkip;
 };
 
-inline double ScanMatcher::icpStep(OrientedPoint & pret, const ScanMatcherMap& map, const OrientedPoint& p, const double* readings) const{
+inline double ScanMatcher::icpStep(OrientedPoint & pret, const ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings) const{
 	const double * angle=m_laserAngles+m_initialBeamsSkip;
 	OrientedPoint lp=p;
 	lp.x+=cos(p.theta)*m_laserPose.x-sin(p.theta)*m_laserPose.y;
@@ -87,7 +88,8 @@ inline double ScanMatcher::icpStep(OrientedPoint & pret, const ScanMatcherMap& m
 	double freeDelta=map.getDelta()*m_freeCellRatio;
 	std::list<PointPair> pairs;
 
-	for (const double* r=readings+m_initialBeamsSkip; r<readings+m_laserBeams; r++, angle++){
+	//for (const double* r=readings+m_initialBeamsSkip; r<readings+m_laserBeams; r++, angle++){
+	for (auto r = readings.begin() + m_initialBeamsSkip; r < readings.end(); r++, angle++){
 		skip++;
 		skip=skip>m_likelihoodSkip?0:skip;
 		if (*r>m_usableRange) continue;
@@ -144,7 +146,7 @@ inline double ScanMatcher::icpStep(OrientedPoint & pret, const ScanMatcherMap& m
 	return score(map, p, readings);
 }
 
-inline double ScanMatcher::score(const ScanMatcherMap& map, const OrientedPoint& p, const double* readings) const{
+inline double ScanMatcher::score(const ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings) const{
 	double s=0;
 	const double * angle=m_laserAngles+m_initialBeamsSkip;
 	OrientedPoint lp=p;
@@ -153,7 +155,8 @@ inline double ScanMatcher::score(const ScanMatcherMap& map, const OrientedPoint&
 	lp.theta+=m_laserPose.theta;
 	unsigned int skip=0;
 	double freeDelta=map.getDelta()*m_freeCellRatio;
-	for (const double* r=readings+m_initialBeamsSkip; r<readings+m_laserBeams; r++, angle++){
+	//for (const double* r=readings+m_initialBeamsSkip; r<readings+m_laserBeams; r++, angle++){
+	for (auto r = readings.begin() + m_initialBeamsSkip; r < readings.end(); r++, angle++){
 		skip++;
 		skip=skip>m_likelihoodSkip?0:skip;
 		if (*r>m_usableRange) continue;
@@ -193,7 +196,7 @@ inline double ScanMatcher::score(const ScanMatcherMap& map, const OrientedPoint&
 	return s;
 }
 
-inline unsigned int ScanMatcher::likelihoodAndScore(double& s, double& l, const ScanMatcherMap& map, const OrientedPoint& p, const double* readings) const{
+inline unsigned int ScanMatcher::likelihoodAndScore(double& s, double& l, const ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings) const{
 	using namespace std;
 	l=0;
 	s=0;
@@ -206,18 +209,19 @@ inline unsigned int ScanMatcher::likelihoodAndScore(double& s, double& l, const 
 	unsigned int skip=0;
 	unsigned int c=0;
 	double freeDelta=map.getDelta()*m_freeCellRatio;
-	for (const double* r=readings+m_initialBeamsSkip; r<readings+m_laserBeams; r++, angle++){
+	//for (const double* r=readings+m_initialBeamsSkip; r<readings+m_laserBeams; r++, angle++){
+	for (auto it = readings.begin() + m_initialBeamsSkip; it != readings.end(); it++, angle++){
 		skip++;
 		skip=skip>m_likelihoodSkip?0:skip;
-		if (*r>m_usableRange) continue;
+		if (*it>m_usableRange) continue;
 		if (skip) continue;
 		Point phit=lp;
-		phit.x+=*r*cos(lp.theta+*angle);
-		phit.y+=*r*sin(lp.theta+*angle);
+		phit.x+=*it*cos(lp.theta+*angle);
+		phit.y+=*it*sin(lp.theta+*angle);
 		IntPoint iphit=map.world2map(phit);
 		Point pfree=lp;
-		pfree.x+=(*r-freeDelta)*cos(lp.theta+*angle);
-		pfree.y+=(*r-freeDelta)*sin(lp.theta+*angle);
+		pfree.x+=(*it-freeDelta)*cos(lp.theta+*angle);
+		pfree.y+=(*it-freeDelta)*sin(lp.theta+*angle);
 		pfree=pfree-phit;
 		IntPoint ipfree=map.world2map(pfree);
 		bool found=false;

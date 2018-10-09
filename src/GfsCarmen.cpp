@@ -45,7 +45,12 @@ int main(int argc, const char * const * argv){
 	//loads from the carmen wrapper the laser and robot settings
 	//SensorMap sensorMap=CarmenWrapper::sensorMap();
 	cerr << "Connected " << endl;
-	processor->setSensorMap();  //!!!!!!!!!!!!! - laser not set
+
+	//this is the CORE LOOP;
+	const RangeSensor* rangeSensor = new RangeSensor("laser", 8, 45, OrientedPoint(0.0, 0.0, 0.0), 0, 500);
+	RangeReading rr(rangeSensor,0);
+
+	processor->setSensorMap(rangeSensor);  //!!!!!!!!!!!!! - laser not set
 
 	//set the command line parameters
 	processor->setMatchingParameters(maxUrange, maxrange, sigma, kernelSize, lstep, astep, iterations, lsigma, ogain, lskip);
@@ -62,8 +67,7 @@ int main(int argc, const char * const * argv){
 
 	bool running=true;
 
-	//this is the CORE LOOP;
-	RangeReading rr(0,0);
+
 
 	std::shared_ptr<SensorsDataStorage> l_sensorsDataStorage;
 	auto l_systemRunner = std::make_unique<Runner>(l_sensorsDataStorage);
@@ -78,8 +82,8 @@ int main(int argc, const char * const * argv){
 			//rr.setPose(OrientedPoint(i, 1.0, p_poseAngle));
 			auto l_robotPose = l_sensorsDataStorage->getRobotPose();
 			rr.setPose(OrientedPoint(l_robotPose.x, l_robotPose.y, l_robotPose.angle));
-			rr.resize(8);/*
-			rr[0] = 1.0;
+			//rr.resize(8);/*
+			/*rr[0] = 1.0;
 			rr[1] = 1.0;
 			rr[2] = 4.0;
 			rr[3] = 5.0;*/

@@ -159,9 +159,10 @@ void GridSlamProcessor::integrateScanSequence(GridSlamProcessor::TNode* node){
 		oldPose=aux->pose;
 
 
-		double * plainReading = new double[m_beams];
-		for(unsigned int i=0; i<m_beams; i++)
-			plainReading[i]=(*(aux->reading))[i];
+		//double * plainReading = new double[m_beams];
+		auto l_scanReading = aux->reading->getScanReading();
+		//for(unsigned int i=0; i<m_beams; i++)
+		//	plainReading[i]=l_scanReading[i];
 
 		for (ParticleVector::iterator it=m_particles.begin(); it!=m_particles.end(); it++){
 			//compute the position relative to the path;
@@ -175,7 +176,7 @@ void GridSlamProcessor::integrateScanSequence(GridSlamProcessor::TNode* node){
 
 			//register the scan
 			m_matcher.invalidateActiveArea();
-			m_matcher.computeActiveArea(it->map, it->pose, plainReading);
+			m_matcher.computeActiveArea(it->map, it->pose, l_scanReading);
 			it->weight+=dw;
 			it->weightSum+=dw;
 
@@ -185,7 +186,6 @@ void GridSlamProcessor::integrateScanSequence(GridSlamProcessor::TNode* node){
 			//update the weight
 		}
 
-		delete [] plainReading;
 		aux=aux->parent;
 	}
 

@@ -117,7 +117,7 @@ void ScanMatcher::computeActiveArea(ScanMatcherMap& map, const OrientedPoint& p,
 	m_activeAreaComputed=true;
 }
 */
-void ScanMatcher::computeActiveArea(ScanMatcherMap& map, const OrientedPoint& p, const double* readings){
+void ScanMatcher::computeActiveArea(ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings){
 	if (m_activeAreaComputed)
 		return;
 	OrientedPoint lp=p;
@@ -136,7 +136,9 @@ void ScanMatcher::computeActiveArea(ScanMatcherMap& map, const OrientedPoint& p,
 
 	/*determine the size of the area*/
 	const double * angle=m_laserAngles+m_initialBeamsSkip;
-	for (const double* r=readings+m_initialBeamsSkip; r<readings+m_laserBeams; r++, angle++){
+	//for (const double* r=readings+m_initialBeamsSkip; r<readings+m_laserBeams; r++, angle++){
+	for (auto r = readings.begin() + m_initialBeamsSkip; r < readings.end(); r++, angle++)
+	{
 		if (*r>m_laserMaxRange) continue;
 		double d=*r>m_usableRange?m_usableRange:*r;
 		Point phit=lp;
@@ -166,7 +168,8 @@ void ScanMatcher::computeActiveArea(ScanMatcherMap& map, const OrientedPoint& p,
 	HierarchicalArray2D<PointAccumulator>::PointSet activeArea;
 	/*allocate the active area*/
 	angle=m_laserAngles+m_initialBeamsSkip;
-	for (const double* r=readings+m_initialBeamsSkip; r<readings+m_laserBeams; r++, angle++)
+	for (auto r = readings.begin() + m_initialBeamsSkip; r < readings.end(); r++, angle++){
+	//for (const double* r=readings+m_initialBeamsSkip; r<readings+m_laserBeams; r++, angle++)
 		if (m_generateMap){
 			double d=*r;
 			if (d>m_laserMaxRange)
@@ -202,6 +205,7 @@ void ScanMatcher::computeActiveArea(ScanMatcherMap& map, const OrientedPoint& p,
 			assert(cp.x>=0 && cp.y>=0);
 			activeArea.insert(cp);
 		}
+	}
 
 	//this allocates the unallocated cells in the active area of the map
 	//cout << "activeArea::size() " << activeArea.size() << endl;
@@ -216,7 +220,8 @@ void ScanMatcher::computeActiveArea(ScanMatcherMap& map, const OrientedPoint& p,
 	m_activeAreaComputed=true;
 }
 
-double ScanMatcher::registerScan(ScanMatcherMap& map, const OrientedPoint& p, const double* readings){
+
+double ScanMatcher::registerScan(ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings){
 	if (!m_activeAreaComputed)
 		computeActiveArea(map, p, readings);
 
@@ -232,7 +237,9 @@ double ScanMatcher::registerScan(ScanMatcherMap& map, const OrientedPoint& p, co
 
 	const double * angle=m_laserAngles+m_initialBeamsSkip;
 	double esum=0;
-	for (const double* r=readings+m_initialBeamsSkip; r<readings+m_laserBeams; r++, angle++)
+	//for (const double* r=readings+m_initialBeamsSkip; r<readings+m_laserBeams; r++, angle++)
+	for (auto r = readings.begin() + m_initialBeamsSkip; r < readings.end(); r++, angle++)
+	{
 		if (m_generateMap){
 			double d=*r;
 			if (d>m_laserMaxRange)
@@ -267,6 +274,7 @@ double ScanMatcher::registerScan(ScanMatcherMap& map, const OrientedPoint& p, co
 			assert(p1.x>=0 && p1.y>=0);
 			map.cell(p1).update(true,phit);
 		}
+	}
 	//cout  << "informationGain=" << -esum << endl;
 	return esum;
 }
@@ -320,7 +328,7 @@ void ScanMatcher::registerScan(ScanMatcherMap& map, const OrientedPoint& p, cons
 
 */
 
-double ScanMatcher::icpOptimize(OrientedPoint& pnew, const ScanMatcherMap& map, const OrientedPoint& init, const double* readings) const{
+double ScanMatcher::icpOptimize(OrientedPoint& pnew, const ScanMatcherMap& map, const OrientedPoint& init, const std::vector<double> readings) const{
 	double currentScore;
 	double sc=score(map, init, readings);;
 	OrientedPoint start=init;
@@ -338,7 +346,7 @@ double ScanMatcher::icpOptimize(OrientedPoint& pnew, const ScanMatcherMap& map, 
 	return currentScore;
 }
 
-double ScanMatcher::optimize(OrientedPoint& pnew, const ScanMatcherMap& map, const OrientedPoint& init, const double* readings) const{
+double ScanMatcher::optimize(OrientedPoint& pnew, const ScanMatcherMap& map, const OrientedPoint& init, const std::vector<double> readings) const{
 	double bestScore=-1;
 	OrientedPoint currentPose=init;
 	double currentScore=score(map, currentPose, readings);
@@ -431,7 +439,7 @@ struct ScoredMove{
 
 typedef std::list<ScoredMove> ScoredMoveList;
 
-double ScanMatcher::optimize(OrientedPoint& _mean, ScanMatcher::CovarianceMatrix& _cov, const ScanMatcherMap& map, const OrientedPoint& init, const double* readings) const{
+double ScanMatcher::optimize(OrientedPoint& _mean, ScanMatcher::CovarianceMatrix& _cov, const ScanMatcherMap& map, const OrientedPoint& init, const std::vector<double> readings) const{
 	ScoredMoveList moveList;
 	double bestScore=-1;
 	OrientedPoint currentPose=init;
@@ -573,7 +581,7 @@ void ScanMatcher::setLaserParameters
 
 
 double ScanMatcher::likelihood
-	(double& _lmax, OrientedPoint& _mean, CovarianceMatrix& _cov, const ScanMatcherMap& map, const OrientedPoint& p, const double* readings){
+	(double& _lmax, OrientedPoint& _mean, CovarianceMatrix& _cov, const ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings){
 	ScoredMoveList moveList;
 
 	for (double xx=-m_llsamplerange; xx<=m_llsamplerange; xx+=m_llsamplestep)
@@ -641,7 +649,7 @@ double ScanMatcher::likelihood
 
 double ScanMatcher::likelihood
 	(double& _lmax, OrientedPoint& _mean, CovarianceMatrix& _cov, const ScanMatcherMap& map, const OrientedPoint& p,
-	Gaussian3& odometry, const double* readings, double gain){
+	Gaussian3& odometry, const std::vector<double> readings, double gain){
 	ScoredMoveList moveList;
 
 

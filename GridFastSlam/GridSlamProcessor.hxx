@@ -5,15 +5,9 @@
  *      Author: Krzysiek
  */
 
-
-#ifdef MACOSX
-// This is to overcome a possible bug in Apple's GCC.
-#define isnan(x) (x==FP_NAN)
-#endif
-
 /**Just scan match every single particle.
 If the scan matching fails, the particle gets a default likelihood.*/
-inline void GridSlamProcessor::scanMatch(const double* plainReading){
+inline void GridSlamProcessor::scanMatch(const std::vector<double> plainReading){
   // sample a new pose from each scan in the reference
 
   double sumScore=0;
@@ -74,7 +68,7 @@ inline void GridSlamProcessor::normalize(){
 
 }
 
-inline bool GridSlamProcessor::resample(const double* plainReading, int adaptSize, const RangeReading* ){
+inline bool GridSlamProcessor::resample(const std::vector<double> plainReading, int adaptSize, const RangeReading* ){
 
   bool hasResampled = false;
 
