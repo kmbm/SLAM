@@ -24,5 +24,10 @@ void FileHandler::writeData(const std::vector<double>& p_data)
 
 void FileHandler::writeData(double p_data)
 {
-	m_fileHandler << p_data << std::endl;
+	m_fileHandler << p_data;
+}
+
+void FileHandler::newLine()
+{
+	m_fileHandler << std::endl;
 }

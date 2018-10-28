@@ -244,7 +244,7 @@ void GridSlamProcessor::setMotionModelParameters
   }
 
 
-  void GridSlamProcessor::setSensorMap(const RangeSensor* p_rangeSensor){
+ void GridSlamProcessor::setSensorMap(const RangeSensor* p_rangeSensor){
 
     /*
       Construct the angle table for the sensor
@@ -285,9 +285,9 @@ void GridSlamProcessor::setMotionModelParameters
 	<< " -delta "<< m_delta
 	<< " -particles "<< size << endl;
 
-
     m_particles.clear();
     TNode* node=new TNode(initialPose, 0, 0, 0);
+
     ScanMatcherMap lmap(Point(xmin+xmax, ymin+ymax)*.5, xmax-xmin, ymax-ymin, delta);
     for (unsigned int i=0; i<size; i++){
       m_particles.push_back(Particle(lmap));
@@ -302,6 +302,7 @@ void GridSlamProcessor::setMotionModelParameters
 		// we use the root directly
 		m_particles.back().node= node;
     }
+
     m_neff=(double)size;
     m_count=0;
     m_readingCount=0;

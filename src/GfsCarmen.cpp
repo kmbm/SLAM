@@ -13,6 +13,7 @@
 #include <configfile/configfile.h>
 #include "Runner.h"
 #include "SystemParameters.h"
+#include "MapLogger.h"
 
 #include <unistd.h>
 #include <stdio.h>
@@ -64,33 +65,44 @@ int main(int argc, const char * const * argv){
 	processor->init(particles, xmin, ymin, xmax, ymax, delta, initialPose);
 	if (outfilename.length()>0)
 		processor->outputStream().open(outfilename.c_str());
-
 	bool running=true;
 
 
-
-	std::shared_ptr<SensorsDataStorage> l_sensorsDataStorage;
+	auto l_mapLogger = std::make_unique<MapLogger>();
+	std::shared_ptr<SensorsDataStorage> l_sensorsDataStorage = std::make_shared<SensorsDataStorage>();
 	auto l_systemRunner = std::make_unique<Runner>(l_sensorsDataStorage);
 	std::thread GyroscopeThread(l_systemRunner->gyroscopeThread());
-	double i=0;
+
+	double temp=0;
+	sleep(2);
+	int x,y;
 	while (running){
+
 		//while (CarmenWrapper::getReading(rr)){
-		while (true){
-			sleep(1);
+		//while (true){
+
+			//sleep(1);
+
 			//RangeReading temp(0,0);
 			//rr = temp;
+
 			//rr.setPose(OrientedPoint(i, 1.0, p_poseAngle));
-			auto l_robotPose = l_sensorsDataStorage->getRobotPose();
-			rr.setPose(OrientedPoint(l_robotPose.x, l_robotPose.y, l_robotPose.angle));
+			const auto& l_robotPose = l_sensorsDataStorage->getRobotPose();
+			//rr.setPose(OrientedPoint(l_robotPose->x, l_robotPose->y, l_robotPose->angle));
+			rr.setPose(OrientedPoint(x, y, l_robotPose->angle));
+				++x; ++y;
 			//rr.resize(8);/*
 			/*rr[0] = 1.0;
 			rr[1] = 1.0;
 			rr[2] = 4.0;
 			rr[3] = 5.0;*/
+
 			bool processed=processor->processScan(rr);
-			i+=10;
+
 			//this returns true when the algorithm effectively processes (the traveled path since the last processing is over a given threshold)
 			if (processed){
+				++temp;
+				if (temp == 2) running = false;
 				cerr << "PROCESSED" << endl;
 				//for searching for the BEST PARTICLE INDEX
 				//				unsigned int best_idx=processor->getBestParticleIndex();
@@ -115,16 +127,25 @@ int main(int argc, const char * const * argv){
 				cerr << "Best Particle is " << best_idx << " with weight " << best_weight << endl;
 
 */
-				cerr << __PRETTY_FUNCTION__  << "CLONING... " << endl;
-				GridSlamProcessor* newProcessor=processor->clone();
-				cerr << "DONE" << endl;
-				cerr << __PRETTY_FUNCTION__  << "DELETING... " << endl;
-				delete processor;
-				cerr << "DONE" << endl;
-				processor=newProcessor;
+				if (running)
+				{
+					cerr << __PRETTY_FUNCTION__  << "CLONING... " << endl;
+					GridSlamProcessor* newProcessor=processor->clone();
+					cerr << "DONE" << endl;
+					cerr << __PRETTY_FUNCTION__  << "DELETING... " << endl;
+					delete processor;
+					cerr << "DONE" << endl;
+					processor=newProcessor;
+				}
 			}
-		}
+		//}
 	}
+	auto l_map = processor->getBestParticleMap().storage();
+	auto l_xSize = processor->getBestParticleMap().storage().getXSize();
+	auto l_ySize = processor->getBestParticleMap().storage().getYSize();
+	l_mapLogger->saveMap(l_map, l_xSize, l_ySize);
+
+	GyroscopeThread.join();
 	return 0;
 }
 

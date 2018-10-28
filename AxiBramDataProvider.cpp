@@ -62,7 +62,7 @@ int AxiBramDataProvider::readPosition()
 	}
 	std::cout << m_currentPosition << std::endl;
 	m_mutex.lock();
-	m_sensorsDataStorage->getRobotPose().setCoordinates(m_currentPosition);
+	m_sensorsDataStorage->getRobotPose()->setCoordinates(m_currentPosition);
 	m_mutex.unlock();
 }
 

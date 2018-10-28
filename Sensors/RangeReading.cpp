@@ -18,9 +18,11 @@ using namespace std;
 
 RangeReading::RangeReading(const RangeSensor* rs, double time)
 	: m_rangeSensor(rs)
-{}
+{
+	m_scanReading.resize(rs->beams().size());
+}
 //	SensorReading(rs,time){}
-
+/*
 RangeReading::RangeReading(unsigned int n_beams, const double* d, const RangeSensor* rs, double time)
 //	SensorReading(rs,time){
 {
@@ -30,7 +32,7 @@ RangeReading::RangeReading(unsigned int n_beams, const double* d, const RangeSen
 	{
 		m_scanReading[i] = d[i];
 	}
-}
+}*/
 
 RangeReading::~RangeReading(){
 //	cerr << __PRETTY_FUNCTION__ << ": CAZZZZZZZZZZZZZZZZZZZZOOOOOOOOOOO" << endl;

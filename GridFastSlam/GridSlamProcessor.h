@@ -180,6 +180,7 @@ namespace GMapping {
 
     inline const std::vector<unsigned int>& getIndexes() const{return m_indexes; }
     int getBestParticleIndex() const;
+    ScanMatcherMap getBestParticleMap() const { return m_particles[getBestParticleIndex()].map; }
     //callbacks
     virtual void onOdometryUpdate();
     virtual void onResampleUpdate();

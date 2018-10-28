@@ -18,7 +18,9 @@ Runner::Runner(std::shared_ptr<SensorsDataStorage>& p_sensorsDataStorage) :
 												  m_lidar,
 												  m_gyro)),
 	m_sensorsDataStorage(p_sensorsDataStorage)
-{}
+{
+	std::cerr << "Runner created" << std::endl;
+}
 
 std::thread Runner::generateMap()
 {

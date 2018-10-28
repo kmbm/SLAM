@@ -25,6 +25,7 @@ public:
 
 	void writeData(const std::vector<double>&);
 	void writeData(double);
+	void newLine();
 
 private:
 	std::ofstream  m_fileHandler;
