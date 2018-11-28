@@ -37,8 +37,7 @@ int main(int argc, const char * const * argv)
 	OrientedPoint initialPose(xmin+xmax/2, ymin+ymax/2, 0);
 
 	processor->init(particles, xmin, ymin, xmax, ymax, delta, LIDAR_NUM_OF_BEAMS, initialPose);
-	if (outfilename.length()>0)
-		processor->outputStream().open(outfilename.c_str());
+
 	bool running=true;
 
 

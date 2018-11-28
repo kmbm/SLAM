@@ -16,9 +16,6 @@
 #include <iomanip>
 #include <utils/stat.h>
 
-//#define MAP_CONSISTENCY_CHECK
-//#define GENERATE_TRAJECTORIES
-
 namespace GMapping {
 
 const double m_distanceThresholdCheck = 20;
@@ -26,7 +23,6 @@ const double m_distanceThresholdCheck = 20;
 using namespace std;
 
   GridSlamProcessor::GridSlamProcessor(): m_infoStream(cout){
-
     m_obsSigmaGain=1;
     m_resampleThreshold=0.5;
     m_minimumScore=0.;
@@ -75,133 +71,40 @@ using namespace std;
     m_angularThresholdDistance=gsp.m_angularThresholdDistance;
     m_obsSigmaGain=gsp.m_obsSigmaGain;
 
-#ifdef MAP_CONSISTENCY_CHECK
-    cerr << __PRETTY_FUNCTION__ <<  ": trajectories copy.... ";
-#endif
     TNodeVector v=gsp.getTrajectories();
     for (unsigned int i=0; i<v.size(); i++){
 		m_particles[i].node=v[i];
     }
-#ifdef MAP_CONSISTENCY_CHECK
-    cerr <<  "end" << endl;
-#endif
-
 
     cerr  << "Tree: normalizing, resetting and propagating weights within copy construction/cloneing ..." ;
     updateTreeWeights(false);
     cerr  << ".done!" <<endl;
   }
 
-  GridSlamProcessor::GridSlamProcessor(std::ostream& infoS): m_infoStream(infoS){
-    m_obsSigmaGain=1;
-    m_resampleThreshold=0.5;
-    m_minimumScore=0.;
-
-  }
-
-  GridSlamProcessor* GridSlamProcessor::clone() const {
-# ifdef MAP_CONSISTENCY_CHECK
-    cerr << __PRETTY_FUNCTION__ << ": performing preclone_fit_test" << endl;
-    typedef std::map<autoptr< Array2D<PointAccumulator> >::reference* const, int> PointerMap;
-    PointerMap pmap;
-	for (ParticleVector::const_iterator it=m_particles.begin(); it!=m_particles.end(); it++){
-	  const ScanMatcherMap& m1(it->map);
-	  const HierarchicalArray2D<PointAccumulator>& h1(m1.storage());
- 	  for (int x=0; x<h1.getXSize(); x++){
-	    for (int y=0; y<h1.getYSize(); y++){
-	      const autoptr< Array2D<PointAccumulator> >& a1(h1.m_cells[x][y]);
-	      if (a1.m_reference){
-		PointerMap::iterator f=pmap.find(a1.m_reference);
-		if (f==pmap.end())
-		  pmap.insert(make_pair(a1.m_reference, 1));
-		else
-		  f->second++;
-	      }
-	    }
-	  }
-	}
-	cerr << __PRETTY_FUNCTION__ <<  ": Number of allocated chunks" << pmap.size() << endl;
-	for(PointerMap::const_iterator it=pmap.begin(); it!=pmap.end(); it++)
-	  assert(it->first->shares==(unsigned int)it->second);
-
-	cerr << __PRETTY_FUNCTION__ <<  ": SUCCESS, the error is somewhere else" << endl;
-# endif
+GridSlamProcessor* GridSlamProcessor::clone() const
+{
 	GridSlamProcessor* cloned=new GridSlamProcessor(*this);
-
-# ifdef MAP_CONSISTENCY_CHECK
-	cerr << __PRETTY_FUNCTION__ <<  ": trajectories end" << endl;
-	cerr << __PRETTY_FUNCTION__ << ": performing afterclone_fit_test" << endl;
-	ParticleVector::const_iterator jt=cloned->m_particles.begin();
-	for (ParticleVector::const_iterator it=m_particles.begin(); it!=m_particles.end(); it++){
-	  const ScanMatcherMap& m1(it->map);
-	  const ScanMatcherMap& m2(jt->map);
-	  const HierarchicalArray2D<PointAccumulator>& h1(m1.storage());
-	  const HierarchicalArray2D<PointAccumulator>& h2(m2.storage());
-	  jt++;
- 	  for (int x=0; x<h1.getXSize(); x++){
-	    for (int y=0; y<h1.getYSize(); y++){
-	      const autoptr< Array2D<PointAccumulator> >& a1(h1.m_cells[x][y]);
-	      const autoptr< Array2D<PointAccumulator> >& a2(h2.m_cells[x][y]);
-	      assert(a1.m_reference==a2.m_reference);
-	      assert((!a1.m_reference) || !(a1.m_reference->shares%2));
-	    }
-	  }
-	}
-	cerr << __PRETTY_FUNCTION__ <<  ": SUCCESS, the error is somewhere else" << endl;
-# endif
 	return cloned;
 }
 
-  GridSlamProcessor::~GridSlamProcessor(){
-    cerr << __PRETTY_FUNCTION__ << ": Start" << endl;
-    cerr << __PRETTY_FUNCTION__ << ": Deeting tree" << endl;
-    for (std::vector<Particle>::iterator it=m_particles.begin(); it!=m_particles.end(); it++){
-#ifdef TREE_CONSISTENCY_CHECK
-      TNode* node=it->node;
-      while(node)
-	node=node->parent;
-      cerr << "@" << endl;
-#endif
-      if (it->node)
-	delete it->node;
-      //cout << "l=" << it->weight<< endl;
-    }
-
-# ifdef MAP_CONSISTENCY_CHECK
-    cerr << __PRETTY_FUNCTION__ << ": performing predestruction_fit_test" << endl;
-    typedef std::map<autoptr< Array2D<PointAccumulator> >::reference* const, int> PointerMap;
-    PointerMap pmap;
-    for (ParticleVector::const_iterator it=m_particles.begin(); it!=m_particles.end(); it++){
-      const ScanMatcherMap& m1(it->map);
-      const HierarchicalArray2D<PointAccumulator>& h1(m1.storage());
-      for (int x=0; x<h1.getXSize(); x++){
-	for (int y=0; y<h1.getYSize(); y++){
-	  const autoptr< Array2D<PointAccumulator> >& a1(h1.m_cells[x][y]);
-	  if (a1.m_reference){
-	    PointerMap::iterator f=pmap.find(a1.m_reference);
-	    if (f==pmap.end())
-	      pmap.insert(make_pair(a1.m_reference, 1));
-	    else
-	      f->second++;
-	  }
+GridSlamProcessor::~GridSlamProcessor()
+{
+	cerr << __PRETTY_FUNCTION__ << ": Start" << endl;
+	cerr << __PRETTY_FUNCTION__ << ": Deeting tree" << endl;
+	for (std::vector<Particle>::iterator it=m_particles.begin(); it!=m_particles.end(); it++)
+	{
+	  if (it->node)
+		  delete it->node;
 	}
-      }
-    }
-    cerr << __PRETTY_FUNCTION__ << ": Number of allocated chunks" << pmap.size() << endl;
-    for(PointerMap::const_iterator it=pmap.begin(); it!=pmap.end(); it++)
-      assert(it->first->shares>=(unsigned int)it->second);
-    cerr << __PRETTY_FUNCTION__ << ": SUCCESS, the error is somewhere else" << endl;
-# endif
-  }
+}
 
-
-
-  void GridSlamProcessor::setMatchingParameters (double urange, double range, double sigma, int kernsize, double lopt, double aopt,
-						 int iterations, double likelihoodSigma, double likelihoodGain, unsigned int likelihoodSkip){
-    m_obsSigmaGain=likelihoodGain;
-    m_matcher.setMatchingParameters(urange, range, sigma, kernsize, lopt, aopt, iterations, likelihoodSigma, likelihoodSkip);
-    if (m_infoStream)
-      m_infoStream << " -maxUrange "<< urange
+void GridSlamProcessor::setMatchingParameters (double urange, double range, double sigma, int kernsize, double lopt, double aopt,
+					 int iterations, double likelihoodSigma, double likelihoodGain, unsigned int likelihoodSkip)
+{
+	m_obsSigmaGain=likelihoodGain;
+	m_matcher.setMatchingParameters(urange, range, sigma, kernsize, lopt, aopt, iterations, likelihoodSigma, likelihoodSkip);
+	if (m_infoStream)
+	  m_infoStream << " -maxUrange "<< urange
 		   << " -maxUrange "<< range
 		   << " -sigma     "<< sigma
 		   << " -kernelSize "<< kernsize
@@ -210,40 +113,30 @@ using namespace std;
 		   << " -astep "    << aopt << endl;
 
 
-  }
-
-void GridSlamProcessor::setMotionModelParameters
-(double srr, double srt, double str, double stt){
-  m_motionModel.srr=srr;
-  m_motionModel.srt=srt;
-  m_motionModel.str=str;
-  m_motionModel.stt=stt;
-
-  if (m_infoStream)
-    m_infoStream << " -srr "<< srr 	<< " -srt "<< srt
-		 << " -str "<< str 	<< " -stt "<< stt << endl;
-
 }
 
-  void GridSlamProcessor::setUpdateDistances(double linear, double angular, double resampleThreshold){
-    m_linearThresholdDistance=linear;
-    m_angularThresholdDistance=angular;
-    m_resampleThreshold=resampleThreshold;
-    if (m_infoStream)
-      m_infoStream << " -linearUpdate " << linear
-		   << " -angularUpdate "<< angular
-		   << " -resampleThreshold " << m_resampleThreshold << endl;
-  }
+void GridSlamProcessor::setMotionModelParameters(double srr, double srt, double str, double stt)
+{
+    m_motionModel.srr=srr;
+    m_motionModel.srt=srt;
+    m_motionModel.str=str;
+    m_motionModel.stt=stt;
+}
 
-  //HERE STARTS THE BEEF
+void GridSlamProcessor::setUpdateDistances(double linear, double angular, double resampleThreshold)
+{
+	m_linearThresholdDistance=linear;
+	m_angularThresholdDistance=angular;
+	m_resampleThreshold=resampleThreshold;
+}
 
-  GridSlamProcessor::Particle::Particle(const ScanMatcherMap& m):
-    map(m), pose(0,0,0), weight(0), weightSum(0), gweight(0), previousIndex(0){
-    node=0;
-  }
+GridSlamProcessor::Particle::Particle(const ScanMatcherMap& m):
+	map(m), pose(0,0,0), weight(0), weightSum(0), gweight(0), previousIndex(0)
+{
+	node=0;
+}
 
-
- void GridSlamProcessor::setSensorMap(const RangeSensor* p_rangeSensor){
+void GridSlamProcessor::setSensorMap(const RangeSensor* p_rangeSensor){
 
     /*
       Construct the angle table for the sensor
@@ -269,7 +162,7 @@ void GridSlamProcessor::setMotionModelParameters
     delete [] angles;
   }
 
-  void GridSlamProcessor::init(unsigned int size, double xmin, double ymin, double xmax, double ymax, double delta, int beams, OrientedPoint initialPose){
+void GridSlamProcessor::init(unsigned int size, double xmin, double ymin, double xmax, double ymax, double delta, int beams, OrientedPoint initialPose){
     m_xmin=xmin;
     m_ymin=ymin;
     m_xmax=xmax;
@@ -290,73 +183,35 @@ void GridSlamProcessor::setMotionModelParameters
     TNode* node=new TNode(initialPose, 0, 0, 0);
 
     ScanMatcherMap lmap(Point(xmin+xmax, ymin+ymax)*.5, xmax-xmin, ymax-ymin, delta);
-    for (unsigned int i=0; i<size; i++){
-      m_particles.push_back(Particle(lmap));
-      m_particles.back().pose=initialPose;
-      m_particles.back().previousPose=initialPose;
-      m_particles.back().setWeight(0);
-      m_particles.back().previousIndex=0;
-
-		// this is not needed
-		//		m_particles.back().node=new TNode(initialPose, 0, node, 0);
-
-		// we use the root directly
+    for (unsigned int i=0; i<size; i++)
+    {
+        m_particles.push_back(Particle(lmap));
+		m_particles.back().pose=initialPose;
+		m_particles.back().previousPose=initialPose;
+		m_particles.back().setWeight(0);
+		m_particles.back().previousIndex=0;
 		m_particles.back().node= node;
     }
-
     m_neff=(double)size;
     m_count=0;
     m_readingCount=0;
     m_linearDistance=m_angularDistance=0;
-  }
-/*
-  void GridSlamProcessor::processTruePos(const OdometryReading& o){
-    const OdometrySensor* os=dynamic_cast<const OdometrySensor*>(o.getSensor());
-    if (os && os->isIdeal() && m_outputStream){
-      m_outputStream << setiosflags(ios::fixed) << setprecision(3);
-      m_outputStream <<  "SIMULATOR_POS " <<  o.getPose().x << " " << o.getPose().y << " " ;
-      m_outputStream << setiosflags(ios::fixed) << setprecision(6) << o.getPose().theta << " " <<  o.getTime() << endl;
-    }
-  }
-*/
+}
 
-  bool GridSlamProcessor::processScan(const RangeReading & reading, int adaptParticles){
-
-    /**retireve the position from the reading, and compute the odometry*/
-
+bool GridSlamProcessor::processScan(const RangeReading & reading, int adaptParticles)
+{
 	std::cerr << "Prediction step";
     OrientedPoint relPose=reading.getPose();
-    if (!m_count){
-      m_lastPartPose=m_odoPose=relPose;
+    if (!m_count)
+    {
+        m_lastPartPose=m_odoPose=relPose;
     }
     //write the state of the reading and update all the particles using the motion model
-    for (ParticleVector::iterator it=m_particles.begin(); it!=m_particles.end(); it++){
-      OrientedPoint& pose(it->pose);
-      pose=m_motionModel.drawFromMotion(it->pose, relPose, m_odoPose);
+    for (ParticleVector::iterator it=m_particles.begin(); it!=m_particles.end(); it++)
+    {
+        OrientedPoint& pose(it->pose);
+        pose=m_motionModel.drawFromMotion(it->pose, relPose, m_odoPose);
     }
-
-    // update the output file
-    if (m_outputStream.is_open()){
-      m_outputStream << "ODOM ";
-      m_outputStream << setiosflags(ios::fixed) << setprecision(3) << m_odoPose.x << " " << m_odoPose.y << " ";
-      m_outputStream << setiosflags(ios::fixed) << setprecision(6) << m_odoPose.theta << " ";
-      //m_outputStream << reading.getTime();
-      m_outputStream << endl;
-    }
-    if (m_outputStream.is_open()){
-      m_outputStream << "ODO_UPDATE "<< m_particles.size() << " ";
-      for (ParticleVector::iterator it=m_particles.begin(); it!=m_particles.end(); it++){
-	OrientedPoint& pose(it->pose);
-	m_outputStream << setiosflags(ios::fixed) << setprecision(3) << pose.x << " " << pose.y << " ";
-	m_outputStream << setiosflags(ios::fixed) << setprecision(6) << pose.theta << " " << it-> weight << " ";
-      }
-     // m_outputStream << reading.getTime();
-      m_outputStream << endl;
-    }
-
-    //invoke the callback
-    onOdometryUpdate();
-
 
     // accumulate the robot translation and rotation
     OrientedPoint move=relPose-m_odoPose;
@@ -385,133 +240,68 @@ void GridSlamProcessor::setMotionModelParameters
     bool processed=false;
 
     // process a scan only if the robot has traveled a given distance
-    if (! m_count
-	|| m_linearDistance>m_linearThresholdDistance
-	|| m_angularDistance>m_angularThresholdDistance){
+    if (! m_count || m_linearDistance>m_linearThresholdDistance	|| m_angularDistance>m_angularThresholdDistance)
+    {
+		cerr << "Laser Pose= " << reading.getPose().x << " " << reading.getPose().y	<< " " << reading.getPose().theta << endl;
 
-      if (m_outputStream.is_open()){
-	m_outputStream << setiosflags(ios::fixed) << setprecision(6);
-	m_outputStream << "FRAME " <<  m_readingCount;
-	m_outputStream << " " << m_linearDistance;
-	m_outputStream << " " << m_angularDistance << endl;
-      }
+		//this is for converting the reading in a scan-matcher feedable form
+		assert(reading.getScanReadingSize()==m_beams);
+		auto l_scanReadingVector = reading.getScanReading();
 
-      if (m_infoStream)
-	m_infoStream << "update frame " <<  m_readingCount << endl
-		     << "update ld=" << m_linearDistance << " ad=" << m_angularDistance << endl;
+		if (m_count>0)
+		{
+			scanMatch(l_scanReadingVector);
+			updateTreeWeights(false);
+			resample(l_scanReadingVector, adaptParticles);
+		}
+		else
+		{
+			for (ParticleVector::iterator it=m_particles.begin(); it!=m_particles.end(); it++)
+			{
+				m_matcher.invalidateActiveArea();
+				m_matcher.computeActiveArea(it->map, it->pose, l_scanReadingVector);
+				m_matcher.registerScan(it->map, it->pose, l_scanReadingVector);
 
+				// cyr: not needed anymore, particles refer to the root in the beginning!
+				TNode* node=new	TNode(it->pose, 0., it->node,  0);
+				node->reading=0;
+				it->node=node;
+			}
+		}
+      	cerr  << "Tree: normalizing, resetting and propagating weights at the end..." ;
+		updateTreeWeights(false);
 
-      cerr << "Laser Pose= " << reading.getPose().x << " " << reading.getPose().y
-	   << " " << reading.getPose().theta << endl;
+		m_lastPartPose=m_odoPose;
+		m_linearDistance=0;
+		m_angularDistance=0;
+		m_count++;
+		processed=true;
 
-
-      //this is for converting the reading in a scan-matcher feedable form
-      assert(reading.getScanReadingSize()==m_beams);
-  //    double * plainReading = new double[m_beams];
-      auto l_scanReadingVector = reading.getScanReading();
-    /*  for(unsigned int i=0; i<m_beams; i++){
-	plainReading[i]=l_scanReadingVector[i];
-      0}*/
-      m_infoStream << "m_count " << m_count << endl;
-      if (m_count>0){
-	//scanMatch(plainReading);
-    scanMatch(l_scanReadingVector);
-	if (m_outputStream.is_open()){
-	  m_outputStream << "LASER_READING "<< reading.getScanReadingSize() << " ";
-	  m_outputStream << setiosflags(ios::fixed) << setprecision(2);
-	 /* for (RangeReading::const_iterator b=reading.begin(); b!=reading.end(); b++){
-	    m_outputStream << *b << " ";
-	  }*/
-	  OrientedPoint p=reading.getPose();
-	  m_outputStream << setiosflags(ios::fixed) << setprecision(6);
-	  //m_outputStream << p.x << " " << p.y << " " << p.theta << " " << reading.getTime()<< endl;
-	  m_outputStream << "SM_UPDATE "<< m_particles.size() << " ";
-	  for (ParticleVector::const_iterator it=m_particles.begin(); it!=m_particles.end(); it++){
-	    const OrientedPoint& pose=it->pose;
-	    m_outputStream << setiosflags(ios::fixed) << setprecision(3) <<  pose.x << " " << pose.y << " ";
-	    m_outputStream << setiosflags(ios::fixed) << setprecision(6) <<  pose.theta << " " << it-> weight << " ";
-	  }
-	  m_outputStream << endl;
-	}
-	onScanmatchUpdate();
-
-	updateTreeWeights(false);
-
-	if (m_infoStream)
-	{
-	    m_infoStream << "neff= " << m_neff  << endl;
-	}
-	if (m_outputStream.is_open())
-	{
-		m_outputStream << setiosflags(ios::fixed) << setprecision(6);
-		m_outputStream << "NEFF " << m_neff << endl;
-	}
-	resample(l_scanReadingVector, adaptParticles);
-
-      } else {
-	m_infoStream << "Registering First Scan"<< endl;
-	for (ParticleVector::iterator it=m_particles.begin(); it!=m_particles.end(); it++){
-	  m_matcher.invalidateActiveArea();
-	  m_matcher.computeActiveArea(it->map, it->pose, l_scanReadingVector);
-	  m_matcher.registerScan(it->map, it->pose, l_scanReadingVector);
-
-	  // cyr: not needed anymore, particles refer to the root in the beginning!
-	  TNode* node=new	TNode(it->pose, 0., it->node,  0);
-	  node->reading=0;
-	  it->node=node;
-
-	}
-      }
-      //		cerr  << "Tree: normalizing, resetting and propagating weights at the end..." ;
-      updateTreeWeights(false);
-      //		cerr  << ".done!" <<endl;
-
-      m_lastPartPose=m_odoPose; //update the past pose for the next iteration
-      m_linearDistance=0;
-      m_angularDistance=0;
-      m_count++;
-      processed=true;
-
-      //keep ready for the next step
-      for (ParticleVector::iterator it=m_particles.begin(); it!=m_particles.end(); it++){
-	it->previousPose=it->pose;
-      }
-
+		for (ParticleVector::iterator it=m_particles.begin(); it!=m_particles.end(); it++)
+		{
+			it->previousPose=it->pose;
+		}
     }
-
-    if (m_outputStream.is_open())
-      m_outputStream << flush;
     m_readingCount++;
     return processed;
-  }
+}
 
-
-  std::ofstream& GridSlamProcessor::outputStream(){
-    return m_outputStream;
-  }
-
-  std::ostream& GridSlamProcessor::infoStream(){
-    return m_infoStream;
-  }
-
-
-  int GridSlamProcessor::getBestParticleIndex() const{
+int GridSlamProcessor::getBestParticleIndex() const
+{
     unsigned int bi=0;
     double bw=-std::numeric_limits<double>::max();
     for (unsigned int i=0; i<m_particles.size(); i++)
-      if (bw<m_particles[i].weightSum){
-	bw=m_particles[i].weightSum;
-	bi=i;
-      }
+    {
+        if (bw<m_particles[i].weightSum)
+        {
+        	bw=m_particles[i].weightSum;
+        	bi=i;
+        }
+    }
     return (int) bi;
-  }
+}
 
-  void GridSlamProcessor::onScanmatchUpdate(){}
-  void GridSlamProcessor::onResampleUpdate(){}
-  void GridSlamProcessor::onOdometryUpdate(){}
-
-
-};// end namespace
+};
 
 
 
