@@ -91,7 +91,7 @@ void Gyroscope::update(){
 		m_robotOrientation = m_robotOrientation + m_zAxisAngle / m_lastAngleUpdate;
 		m_lastAngleUpdate = 0;
 	}
-	std::cerr << "ANGLE: " << m_robotOrientation << std::endl;
+	//std::cerr << "ANGLE: " << m_robotOrientation << std::endl;
 	m_axiBramDataProvider->setRobotOrientation(m_robotOrientation);
 
 	m_mutex.lock();

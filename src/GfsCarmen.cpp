@@ -48,7 +48,7 @@ int main(int argc, const char * const * argv){
 	cerr << "Connected " << endl;
 
 	//this is the CORE LOOP;
-	const RangeSensor* rangeSensor = new RangeSensor("laser", 8, 45, OrientedPoint(0.0, 0.0, 0.0), 0, 500);
+	const RangeSensor* rangeSensor = new RangeSensor("laser", LIDAR_NUM_OF_BEAMS, OrientedPoint(0.0, 0.0, 0.0), 0, 500);
 	RangeReading rr(rangeSensor,0);
 
 	processor->setSensorMap(rangeSensor);  //!!!!!!!!!!!!! - laser not set
@@ -62,20 +62,21 @@ int main(int argc, const char * const * argv){
 
 
 	//INITIALIZATION
-	processor->init(particles, xmin, ymin, xmax, ymax, delta, initialPose);
+	processor->init(particles, xmin, ymin, xmax, ymax, delta, LIDAR_NUM_OF_BEAMS, initialPose);
 	if (outfilename.length()>0)
 		processor->outputStream().open(outfilename.c_str());
 	bool running=true;
 
 
 	auto l_mapLogger = std::make_unique<MapLogger>();
-	std::shared_ptr<SensorsDataStorage> l_sensorsDataStorage = std::make_shared<SensorsDataStorage>();
+	std::shared_ptr<SensorsDataStorage> l_sensorsDataStorage = std::make_shared<SensorsDataStorage>(LIDAR_NUM_OF_BEAMS);
 	auto l_systemRunner = std::make_unique<Runner>(l_sensorsDataStorage);
 	std::thread GyroscopeThread(l_systemRunner->gyroscopeThread());
-
+	std::thread LidarThread(l_systemRunner->lidarScan());
+//while(1){}
 	double temp=0;
 	sleep(2);
-	int x,y;
+	double x=0.8, y=1;
 	while (running){
 
 		//while (CarmenWrapper::getReading(rr)){
@@ -89,20 +90,41 @@ int main(int argc, const char * const * argv){
 			//rr.setPose(OrientedPoint(i, 1.0, p_poseAngle));
 			const auto& l_robotPose = l_sensorsDataStorage->getRobotPose();
 			//rr.setPose(OrientedPoint(l_robotPose->x, l_robotPose->y, l_robotPose->angle));
+			x+=0.2;
 			rr.setPose(OrientedPoint(x, y, l_robotPose->angle));
-				++x; ++y;
-			//rr.resize(8);/*
-			/*rr[0] = 1.0;
-			rr[1] = 1.0;
-			rr[2] = 4.0;
-			rr[3] = 5.0;*/
+				//x+=0.2;// ++y;
+				/*
+			std::vector<double> vect1{5,9,9,9,9,9,9,9,9,9,6,9,9,9,9,9,9,9,9,9};
+			std::vector<double> vect2{3,9,9,9,9,9,9,9,9,9,8,9,9,9,9,9,9,9,9,9};
+			std::vector<double> vect3{1,9,9,9,9,9,9,9,9,9,10,9,9,9,9,9,9,9,9,9};*/
 
+			std::vector<double> vect1{.5,.9,.9,.9,.9,.9,.9,.9,.9,.9,.6,.9,.9,.9,.9,.9,.9,.9,.9,.9};
+			std::vector<double> vect2{.3,.9,.9,.9,.9,.9,.9,.9,.9,.9,.8,.9,.9,.9,.9,.9,.9,.9,.9,.9};
+			std::vector<double> vect3{.1,.9,.9,.9,.9,.9,.9,.9,.9,.9,1,.9,.9,.9,.9,.9,.9,.9,.9,.9};
+			//std::vector<double> vect2{3,9,9,9,9,9,9,9,9,9,8,9,9,9,9,9,9,9,9,9};
+			//std::vector<double> vect3{1,9,9,9,9,9,9,9,9,9,10,9,9,9,9,9,9,9,9,9}
+			//rr.setScanReading(l_sensorsDataStorage->getLidarScan()->lidarFilteredReadings);
+			if (temp == 0)
+			{
+				rr.setScanReading(vect1);
+				//x=1.2;
+			}
+			else if(temp == 1)
+			{
+				rr.setScanReading(vect2);
+				//x=1.4;
+			}
+			else
+			{
+				rr.setScanReading(vect3);
+				//x=1.6;
+			}
 			bool processed=processor->processScan(rr);
 
 			//this returns true when the algorithm effectively processes (the traveled path since the last processing is over a given threshold)
 			if (processed){
 				++temp;
-				if (temp == 2) running = false;
+				if (temp == 3) running = false;
 				cerr << "PROCESSED" << endl;
 				//for searching for the BEST PARTICLE INDEX
 				//				unsigned int best_idx=processor->getBestParticleIndex();
@@ -140,12 +162,12 @@ int main(int argc, const char * const * argv){
 			}
 		//}
 	}
-	auto l_map = processor->getBestParticleMap().storage();
-	auto l_xSize = processor->getBestParticleMap().storage().getXSize();
-	auto l_ySize = processor->getBestParticleMap().storage().getYSize();
-	l_mapLogger->saveMap(l_map, l_xSize, l_ySize);
+	auto l_map = processor->getBestParticleMap();
+	l_mapLogger->saveMap(l_map);
 
 	GyroscopeThread.join();
+	LidarThread.join();
+
 	return 0;
 }
 

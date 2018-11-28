@@ -69,7 +69,7 @@ class ScanMatcher{
 		double m_llsamplestep;
 		double m_lasamplerange;
 		double m_lasamplestep;
-		bool m_generateMap;
+		bool m_generateMap = true;
 		double m_enlargeStep;
 		double m_fullnessThreshold;
 		double m_angularOdometryReliability;

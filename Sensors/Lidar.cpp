@@ -7,7 +7,11 @@
 
 #include <Lidar.h>
 
-Lidar::Lidar():uartHost("/dev/ttyUL2") {
+Lidar::Lidar(std::shared_ptr<SensorsDataStorage> p_sensorsDataStorage) :
+	uartHost("/dev/ttyUL2"),
+	m_sensorsDataStorage(std::move(p_sensorsDataStorage)),
+	m_numOfReadingsPerTurn(m_sensorsDataStorage->getNumberOfBeams())
+{
 	//stop();
 	//usleep(1000);
 }
@@ -46,8 +50,8 @@ void Lidar::scan(){
 		uartHost.readData(l_frameBuffer,5);
 		LidarDataResponse l_lidarDataResponse(l_frameBuffer);
 
-		fillNeighborhoodScanVector(l_lidarDataResponse);
-
+		//fillNeighborhoodScanVector(l_lidarDataResponse);
+		m_sensorsDataStorage->getLidarScan()->addLidarReading(l_lidarDataResponse);
 		if(i == 100)
 		{
 			j++;
@@ -58,13 +62,13 @@ void Lidar::scan(){
 			j=0;
 			for (const auto& l_distance : m_neighborhoodScanVector)
 			{
-				std::cerr << l_distance.second.quality << "   " << l_distance.second.angle << "   " << l_distance.second.distance <<std::endl;
+				//std::cerr << l_distance.second.quality << "   " << l_distance.second.angle << "   " << l_distance.second.distance <<std::endl;
 			}
-			std::cerr << "DUPA" << std::endl;
+			//std::cerr << "DUPA" << std::endl;
 
 		}
 		//std::cerr << l_quality << "   " << l_angle << "   " << l_distance <<std::endl;
-		//std::cerr << "DUPA";
+		//std::cerr << "DUPA ";
 	}
 	//stop();
 

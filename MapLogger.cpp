@@ -11,13 +11,15 @@ MapLogger::MapLogger() :
 	m_mapFileHandler(std::make_unique<FileHandler>("map.txt"))
 {}
 
-void MapLogger::saveMap(GMapping::HierarchicalArray2D<GMapping::PointAccumulator>& p_map, int p_xSize, int p_ySize)
+void MapLogger::saveMap(GMapping::ScanMatcherMap& p_map)
 {
-	for (int i = 0; i < p_ySize; ++i)
+	for (int i = 0; i < p_map.getMapSizeX(); ++i)
 	{
-		for (int j = 0; j < p_xSize; ++j)
+		for (int j = 0; j < p_map.getMapSizeY(); ++j)
 		{
-			m_mapFileHandler->writeData(p_map.cellState(i,j));
+			m_mapFileHandler->writeData(p_map.cell(i,j));
+			if (p_map.cell(i,j) != -1)
+				std::cerr<< "DUPA" << p_map.cell(i,j);
 		}
 		m_mapFileHandler->newLine();
 	}

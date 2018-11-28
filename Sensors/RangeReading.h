@@ -26,6 +26,7 @@ class RangeReading /*public SensorReading,*/// public std::vector<double>{
 		//unsigned int rawView(double* v, double density=0.) const;
 		std::vector<Point> cartesianForm(double maxRange=1e6) const;
 		unsigned int activeBeams(double density=0.) const;
+		void setScanReading(const ScanReading& p_scanReading) {m_scanReading = p_scanReading;}
 		ScanReading getScanReading() const {return m_scanReading;}
 		int getScanReadingSize() const {return m_scanReading.size();}
 	protected:

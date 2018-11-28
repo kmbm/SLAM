@@ -8,8 +8,11 @@
 #ifndef SENSORS_SENSORSDATASTORAGE_H_
 #define SENSORS_SENSORSDATASTORAGE_H_
 
+#include "Lidar/LidarDataResponse.h"
 #include <mutex>
 #include <memory>
+#include <vector>
+#include <map>
 #include <iostream>
 
 struct RobotCoordinates
@@ -40,13 +43,41 @@ struct RobotPose{
 	std::mutex m_mutex;
 };
 
+struct LidarScan{
+	void init(int);
+
+	void addLidarReading(const LidarDataResponse&);
+	std::vector<double> lidarFilteredReadings;
+
+private:
+	double countAngleStep(int);
+	std::map<int, int> m_angleToIndexMap;
+	std::vector<double> m_lidarFilteredReadingsPrep;
+
+	std::mutex m_mutex;
+	int m_lastIndex;
+	int m_lastAngle;
+};
+
+
+
 class SensorsDataStorage {
 public:
-	SensorsDataStorage() : m_pose(std::make_shared<RobotPose>()) {};
-	std::shared_ptr<RobotPose> getRobotPose(){return m_pose;};
+	SensorsDataStorage(int p_beams) : m_pose(std::make_shared<RobotPose>()),
+									  m_lidarScan(std::make_shared<LidarScan>()),
+									  m_beams(p_beams)
+	{
+		m_lidarScan->init(m_beams);
+	}
+	std::shared_ptr<RobotPose> getRobotPose(){return m_pose;}
+	std::shared_ptr<LidarScan> getLidarScan(){return m_lidarScan;}
+	int getNumberOfBeams(){return m_beams;}
 
 private:
 	std::shared_ptr<RobotPose> m_pose;
+	std::shared_ptr<LidarScan> m_lidarScan;
+
+	int m_beams;
 };
 
 #endif /* SENSORS_SENSORSDATASTORAGE_H_ */

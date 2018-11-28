@@ -262,6 +262,7 @@ double ScanMatcher::registerScan(ScanMatcherMap& map, const OrientedPoint& p, co
 			if (d<m_usableRange){
 				double e=-map.cell(p1).entropy();
 				map.cell(p1).update(true, phit);
+				//map.cell(p1) = 5;
 				e+=map.cell(p1).entropy();
 				esum+=e;
 			}

@@ -6,6 +6,7 @@
  */
 
 #include <FileHandler.h>
+#include <iomanip>
 
 FileHandler::FileHandler(const char* p_fileName)
 {
@@ -24,7 +25,7 @@ void FileHandler::writeData(const std::vector<double>& p_data)
 
 void FileHandler::writeData(double p_data)
 {
-	m_fileHandler << p_data;
+	m_fileHandler << std::setprecision(3) << p_data << "    ";
 }
 
 void FileHandler::newLine()

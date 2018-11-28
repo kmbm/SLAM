@@ -24,6 +24,7 @@
 #include "MotionModel.h"
 
 
+
 namespace GMapping {
 
   /**This class defines the basic GridFastSLAM algorithm.  It
@@ -150,7 +151,7 @@ namespace GMapping {
 
     //methods for accessing the parameters
     void setSensorMap(const RangeSensor*);
-    void init(unsigned int size, double xmin, double ymin, double xmax, double ymax, double delta,
+    void init(unsigned int size, double xmin, double ymin, double xmax, double ymax, double delta, int beams,
 	      OrientedPoint initialPose=OrientedPoint(0,0,0));
     void setMatchingParameters(double urange, double range, double sigma, int kernsize, double lopt, double aopt,
 			       int iterations, double likelihoodSigma=1, double likelihoodGain=1, unsigned int likelihoodSkip=0);

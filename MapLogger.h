@@ -17,7 +17,7 @@ using namespace GMapping;
 class MapLogger {
 public:
 	MapLogger();
-	void saveMap(GMapping::HierarchicalArray2D<GMapping::PointAccumulator>&, int, int);
+	void saveMap(GMapping::ScanMatcherMap&);
 private:
 	std::unique_ptr<FileHandler> m_mapFileHandler;
 };

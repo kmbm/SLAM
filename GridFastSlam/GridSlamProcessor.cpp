@@ -30,7 +30,6 @@ using namespace std;
     m_obsSigmaGain=1;
     m_resampleThreshold=0.5;
     m_minimumScore=0.;
-    m_beams = 8;
   }
 
   GridSlamProcessor::GridSlamProcessor(const GridSlamProcessor& gsp)
@@ -270,12 +269,13 @@ void GridSlamProcessor::setMotionModelParameters
     delete [] angles;
   }
 
-  void GridSlamProcessor::init(unsigned int size, double xmin, double ymin, double xmax, double ymax, double delta, OrientedPoint initialPose){
+  void GridSlamProcessor::init(unsigned int size, double xmin, double ymin, double xmax, double ymax, double delta, int beams, OrientedPoint initialPose){
     m_xmin=xmin;
     m_ymin=ymin;
     m_xmax=xmax;
     m_ymax=ymax;
     m_delta=delta;
+    m_beams=beams;
     if (m_infoStream)
       m_infoStream
 	<< " -xmin "<< m_xmin
@@ -283,6 +283,7 @@ void GridSlamProcessor::setMotionModelParameters
 	<< " -ymin "<< m_ymin
 	<< " -ymax "<< m_ymax
 	<< " -delta "<< m_delta
+	<< " -beams "<< m_beams
 	<< " -particles "<< size << endl;
 
     m_particles.clear();

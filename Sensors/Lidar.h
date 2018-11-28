@@ -9,48 +9,17 @@
 #define LIDAR_H_
 
 #include "UartDriver.h"
+#include "SensorsDataStorage.h"
+#include "Lidar/LidarDataResponse.h"
 #include <map>
 #include <vector>
 #include <memory>
 #include <mutex>
 
-enum LidarPosition
-{
-	LIDAR_POSITION_FRONT = 0,
-	LIDAR_POSITION_FRONT_RIGHT,
-	LIDAR_POSITION_RIGHT,
-	LIDAR_POSITION_BACK_RIGHT,
-	LIDAR_POSITION_BACK,
-	LIDAR_POSITION_BACK_LEFT,
-	LIDAR_POSITION_LEFT,
-	LIDAR_POSITION_FRONT_LEFT
-};
-
-struct LidarDataResponse
-{
-	int quality;
-	float angle;
-	float distance;
-
-	LidarDataResponse()
-	{
-		quality = 0;
-		angle = 0;
-		distance = 0;
-	}
-
-	LidarDataResponse(char* p_responseBuffer)
-	{
-		quality = p_responseBuffer[0] >> 2;
-		angle = ((p_responseBuffer[2] << 8 | p_responseBuffer[1]) >> 1) >> 6;
-		distance = (p_responseBuffer[4] << 8 | p_responseBuffer[3]) >> 2;
-	}
-};
-
 class Lidar
 {
 public:
-	Lidar();
+	Lidar(std::shared_ptr<SensorsDataStorage>);
 	~Lidar();
 
 	void stop();
@@ -70,6 +39,9 @@ private:
 	static const char resetReq = 0x40;
 	static const unsigned char scanReq = 0x20;
 	std::map<LidarPosition, LidarDataResponse> m_neighborhoodScanVector;
+
+	std::shared_ptr<SensorsDataStorage> m_sensorsDataStorage;
+	int m_numOfReadingsPerTurn;
 };
 
 #endif /* LIDAR_H_ */
