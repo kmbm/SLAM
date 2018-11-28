@@ -8,7 +8,6 @@
 #ifndef SCANMATCHING_SCANMATCHER_H_
 #define SCANMATCHING_SCANMATCHER_H_
 
-#include "IcpOptimization.h"
 #include "PointAccumulator.h"
 #include <Utils/Stat.h>
 #include <iostream>

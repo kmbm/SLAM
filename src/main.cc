@@ -10,7 +10,6 @@
 
 //temp
 #include <Map/Map.h>
-#include <ScanMatching/IcpOptimization.h>
 #include <ScanMatching/ScanMatcher.h>
 
 #ifdef MAIN
