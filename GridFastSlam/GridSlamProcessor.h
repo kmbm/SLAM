@@ -71,7 +71,6 @@ public:
 
     GridSlamProcessor* clone() const;
 
-    void setSensorMap(const RangeSensor*);
     void init(unsigned int size, double xmin, double ymin, double xmax, double ymax, double delta, int beams,
 	      OrientedPoint initialPose=OrientedPoint(0,0,0));
     void setMatchingParameters(double urange, double range, double sigma, int kernsize, double lopt, double aopt,

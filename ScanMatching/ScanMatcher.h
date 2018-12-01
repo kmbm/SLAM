@@ -26,8 +26,6 @@ class ScanMatcher{
 		double optimize(OrientedPoint& pnew, const ScanMatcherMap& map, const OrientedPoint& p, const ScanReading readings) const;
 
 		double registerScan(ScanMatcherMap& map, const OrientedPoint& p, const ScanReading readings);
-		void setLaserParameters
-			(unsigned int beams, double* angles, const OrientedPoint& lpose);
 		void setMatchingParameters
 			(double urange, double range, double sigma, int kernsize, double lopt, double aopt, int iterations, double likelihoodSigma=1, unsigned int likelihoodSkip=0 );
 		void invalidateActiveArea();

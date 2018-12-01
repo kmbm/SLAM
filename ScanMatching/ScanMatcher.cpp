@@ -293,13 +293,6 @@ double ScanMatcher::optimize(OrientedPoint& pnew, const ScanMatcherMap& map, con
 	return bestScore;
 }
 
-void ScanMatcher::setLaserParameters(unsigned int beams, double* angles, const OrientedPoint& lpose){
-	assert(beams<LASER_MAXBEAMS);
-	m_laserPose=lpose;
-	m_laserBeams=beams;
-	//memcpy(m_laserAngles, angles, sizeof(double)*m_laserBeams);
-}
-
 void ScanMatcher::setMatchingParameters
 	(double urange, double range, double sigma, int kernsize, double lopt, double aopt, int iterations,  double likelihoodSigma, unsigned int likelihoodSkip){
 	m_usableRange=urange;

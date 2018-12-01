@@ -136,32 +136,6 @@ GridSlamProcessor::Particle::Particle(const ScanMatcherMap& m):
 	node=0;
 }
 
-void GridSlamProcessor::setSensorMap(const RangeSensor* p_rangeSensor){
-
-    /*
-      Construct the angle table for the sensor
-
-      FIXME For now detect the readings of only the front laser, and assume its pose is in the center of the robot
-    */
-
-   /* SensorMap::const_iterator laser_it=smap.find(std::string("FLASER"));
-    if (laser_it==smap.end()){
-      cerr << "Attempting to load the new carmen log format" << endl;
-      laser_it=smap.find(std::string("ROBOTLASER1"));
-      assert(laser_it!=smap.end());
-    }
-    const RangeSensor* rangeSensor=dynamic_cast<const RangeSensor*>((laser_it->second));
-    assert(rangeSensor && rangeSensor->beams().size());*/
-
-    m_beams=static_cast<unsigned int>(p_rangeSensor->beams().size());
-    double* angles=new double[p_rangeSensor->beams().size()];
-    for (unsigned int i=0; i<m_beams; i++){
-      angles[i]=p_rangeSensor->beams()[i].pose.theta;
-    }
-    m_matcher.setLaserParameters(m_beams, angles, p_rangeSensor->getPose());
-    delete [] angles;
-  }
-
 void GridSlamProcessor::init(unsigned int size, double xmin, double ymin, double xmax, double ymax, double delta, int beams, OrientedPoint initialPose){
     m_xmin=xmin;
     m_ymin=ymin;

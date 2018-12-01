@@ -28,8 +28,6 @@ int main(int argc, const char * const * argv)
 	const RangeSensor* rangeSensor = new RangeSensor("laser", LIDAR_NUM_OF_BEAMS, OrientedPoint(0.0, 0.0, 0.0), 0, 500);
 	RangeReading rr(rangeSensor,0);
 
-	processor->setSensorMap(rangeSensor);  //!!!!!!!!!!!!! - laser not set
-
 	processor->setMatchingParameters(maxUrange, maxrange, sigma, kernelSize, lstep, astep, iterations, lsigma, ogain, lskip);
 	processor->setMotionModelParameters(srr, srt, str, stt);
 	processor->setUpdateDistances(linearUpdate, angularUpdate, resampleThreshold);
