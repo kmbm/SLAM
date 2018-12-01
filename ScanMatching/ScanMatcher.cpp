@@ -60,7 +60,7 @@ void ScanMatcher::invalidateActiveArea(){
 	m_activeAreaComputed=false;
 }
 
-void ScanMatcher::computeActiveArea(ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings){
+void ScanMatcher::computeActiveArea(ScanMatcherMap& map, const OrientedPoint& p, const ScanReading readings){
 	if (m_activeAreaComputed)
 		return;
 	OrientedPoint lp=p;
@@ -77,20 +77,22 @@ void ScanMatcher::computeActiveArea(ScanMatcherMap& map, const OrientedPoint& p,
 	if (lp.x>max.x) max.x=lp.x;
 	if (lp.y>max.y) max.y=lp.y;
 
-	/*determine the size of the area*/
-	const double * angle=m_laserAngles+m_initialBeamsSkip;
-
-	for (auto r = readings.begin() + m_initialBeamsSkip; r < readings.end(); r++, angle++)
+	for (auto r = readings.begin() + m_initialBeamsSkip; r < readings.end(); r++)
 	{
-		if (*r>m_laserMaxRange) continue;
-		double d=*r>m_usableRange?m_usableRange:*r;
-		Point phit=lp;
-		phit.x+=d*cos(lp.theta+*angle);
-		phit.y+=d*sin(lp.theta+*angle);
-		if (phit.x<min.x) min.x=phit.x;
-		if (phit.y<min.y) min.y=phit.y;
-		if (phit.x>max.x) max.x=phit.x;
-		if (phit.y>max.y) max.y=phit.y;
+		if (r->quality > MIN_LIDAR_QUALITY)
+		{
+			auto l_distance = r->distance;
+			auto l_angle = r->angle;
+			if (l_distance > m_laserMaxRange) continue;
+			double d=l_distance > m_usableRange ? m_usableRange : l_distance;
+			Point phit=lp;
+			phit.x+=d*cos(lp.theta + l_angle);
+			phit.y+=d*sin(lp.theta + l_angle);
+			if (phit.x<min.x) min.x=phit.x;
+			if (phit.y<min.y) min.y=phit.y;
+			if (phit.x>max.x) max.x=phit.x;
+			if (phit.y>max.y) max.y=phit.y;
+		}
 	}
 
 	if ( !map.isInside(min)	|| !map.isInside(max)){
@@ -104,43 +106,48 @@ void ScanMatcher::computeActiveArea(ScanMatcherMap& map, const OrientedPoint& p,
 	}
 
 	HierarchicalArray2D<PointAccumulator>::PointSet activeArea;
-	/*allocate the active area*/
-	angle=m_laserAngles+m_initialBeamsSkip;
-	for (auto r = readings.begin() + m_initialBeamsSkip; r < readings.end(); r++, angle++){
-		if (m_generateMap){
-			double d=*r;
-			if (d>m_laserMaxRange)
-				continue;
-			if (d>m_usableRange)
-				d=m_usableRange;
-			Point phit=lp+Point(d*cos(lp.theta+*angle),d*sin(lp.theta+*angle));
-			IntPoint p0=map.world2map(lp);
-			IntPoint p1=map.world2map(phit);
 
-			IntPoint linePoints[20000] ;
-			GridLineTraversalLine line;
-			line.points=linePoints;
-			GridLineTraversal::gridLine(p0, p1, &line);
-			for (int i=0; i<line.num_points-1; i++){
-				assert(map.isInside(linePoints[i]));
-				activeArea.insert(map.storage().patchIndexes(linePoints[i]));
-				assert(linePoints[i].x>=0 && linePoints[i].y>=0);
-			}
-			if (d<m_usableRange){
+	for (auto r = readings.begin() + m_initialBeamsSkip; r < readings.end(); r++)
+	{
+		if (r->quality > MIN_LIDAR_QUALITY)
+		{
+			auto l_angle = r->angle;
+			if (m_generateMap){
+				double d = r->distance;
+				if (d>m_laserMaxRange)
+					continue;
+				if (d>m_usableRange)
+					d=m_usableRange;
+				Point phit=lp+Point(d*cos(lp.theta+l_angle),d*sin(lp.theta+l_angle));
+				IntPoint p0=map.world2map(lp);
+				IntPoint p1=map.world2map(phit);
+
+				IntPoint linePoints[20000] ;
+				GridLineTraversalLine line;
+				line.points=linePoints;
+				GridLineTraversal::gridLine(p0, p1, &line);
+				for (int i=0; i<line.num_points-1; i++){
+					assert(map.isInside(linePoints[i]));
+					activeArea.insert(map.storage().patchIndexes(linePoints[i]));
+					assert(linePoints[i].x>=0 && linePoints[i].y>=0);
+				}
+				if (d<m_usableRange){
+					IntPoint cp=map.storage().patchIndexes(p1);
+					assert(cp.x>=0 && cp.y>=0);
+					activeArea.insert(cp);
+				}
+			} else {
+				auto l_distance = r->distance;
+				if (l_distance > m_laserMaxRange|| l_distance > m_usableRange) continue;
+				Point phit=lp;
+				phit.x+=l_distance*cos(lp.theta+l_angle);
+				phit.y+=l_distance*sin(lp.theta+l_angle);
+				IntPoint p1=map.world2map(phit);
+				assert(p1.x>=0 && p1.y>=0);
 				IntPoint cp=map.storage().patchIndexes(p1);
 				assert(cp.x>=0 && cp.y>=0);
 				activeArea.insert(cp);
 			}
-		} else {
-			if (*r>m_laserMaxRange||*r>m_usableRange) continue;
-			Point phit=lp;
-			phit.x+=*r*cos(lp.theta+*angle);
-			phit.y+=*r*sin(lp.theta+*angle);
-			IntPoint p1=map.world2map(phit);
-			assert(p1.x>=0 && p1.y>=0);
-			IntPoint cp=map.storage().patchIndexes(p1);
-			assert(cp.x>=0 && cp.y>=0);
-			activeArea.insert(cp);
 		}
 	}
 	map.storage().setActiveArea(activeArea, true);
@@ -148,7 +155,7 @@ void ScanMatcher::computeActiveArea(ScanMatcherMap& map, const OrientedPoint& p,
 }
 
 
-double ScanMatcher::registerScan(ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings){
+double ScanMatcher::registerScan(ScanMatcherMap& map, const OrientedPoint& p, const ScanReading readings){
 	if (!m_activeAreaComputed)
 		computeActiveArea(map, p, readings);
 
@@ -162,50 +169,54 @@ double ScanMatcher::registerScan(ScanMatcherMap& map, const OrientedPoint& p, co
 	IntPoint p0=map.world2map(lp);
 
 
-	const double * angle=m_laserAngles+m_initialBeamsSkip;
 	double esum=0;
-	for (auto r = readings.begin() + m_initialBeamsSkip; r < readings.end(); r++, angle++)
+	for (auto r = readings.begin() + m_initialBeamsSkip; r < readings.end(); r++)
 	{
-		if (m_generateMap){
-			double d=*r;
-			if (d>m_laserMaxRange)
-				continue;
-			if (d>m_usableRange)
-				d=m_usableRange;
-			Point phit=lp+Point(d*cos(lp.theta+*angle),d*sin(lp.theta+*angle));
-			IntPoint p1=map.world2map(phit);
-			IntPoint linePoints[20000] ;
-			GridLineTraversalLine line;
-			line.points=linePoints;
-			GridLineTraversal::gridLine(p0, p1, &line);
-			for (int i=0; i<line.num_points-1; i++){
-				PointAccumulator& cell=map.cell(line.points[i]);
-				double e=-cell.entropy();
-				cell.update(false, Point(0,0));
-				e+=cell.entropy();
-				esum+=e;
+		if (r->quality > MIN_LIDAR_QUALITY)
+		{
+			auto l_angle = r->angle;
+			auto l_distance = r->distance;
+			if (m_generateMap){
+				double d=l_distance;
+				if (d>m_laserMaxRange)
+					continue;
+				if (d>m_usableRange)
+					d=m_usableRange;
+				Point phit=lp+Point(d*cos(lp.theta+l_angle),d*sin(lp.theta+l_angle));
+				IntPoint p1=map.world2map(phit);
+				IntPoint linePoints[20000] ;
+				GridLineTraversalLine line;
+				line.points=linePoints;
+				GridLineTraversal::gridLine(p0, p1, &line);
+				for (int i=0; i<line.num_points-1; i++){
+					PointAccumulator& cell=map.cell(line.points[i]);
+					double e=-cell.entropy();
+					cell.update(false, Point(0,0));
+					e+=cell.entropy();
+					esum+=e;
+				}
+				if (d<m_usableRange){
+					double e=-map.cell(p1).entropy();
+					map.cell(p1).update(true, phit);
+					//map.cell(p1) = 5;
+					e+=map.cell(p1).entropy();
+					esum+=e;
+				}
+			} else {
+				if (l_distance > m_laserMaxRange|| l_distance > m_usableRange) continue;
+				Point phit=lp;
+				phit.x+= l_distance * cos(lp.theta+l_angle);
+				phit.y+= l_distance * sin(lp.theta+l_angle);
+				IntPoint p1=map.world2map(phit);
+				assert(p1.x>=0 && p1.y>=0);
+				map.cell(p1).update(true,phit);
 			}
-			if (d<m_usableRange){
-				double e=-map.cell(p1).entropy();
-				map.cell(p1).update(true, phit);
-				//map.cell(p1) = 5;
-				e+=map.cell(p1).entropy();
-				esum+=e;
-			}
-		} else {
-			if (*r>m_laserMaxRange||*r>m_usableRange) continue;
-			Point phit=lp;
-			phit.x+=*r*cos(lp.theta+*angle);
-			phit.y+=*r*sin(lp.theta+*angle);
-			IntPoint p1=map.world2map(phit);
-			assert(p1.x>=0 && p1.y>=0);
-			map.cell(p1).update(true,phit);
 		}
 	}
 	return esum;
 }
 
-double ScanMatcher::optimize(OrientedPoint& pnew, const ScanMatcherMap& map, const OrientedPoint& init, const std::vector<double> readings) const{
+double ScanMatcher::optimize(OrientedPoint& pnew, const ScanMatcherMap& map, const OrientedPoint& init, const ScanReading readings) const{
 	double bestScore=-1;
 	OrientedPoint currentPose=init;
 	double currentScore=score(map, currentPose, readings);
@@ -286,7 +297,7 @@ void ScanMatcher::setLaserParameters(unsigned int beams, double* angles, const O
 	assert(beams<LASER_MAXBEAMS);
 	m_laserPose=lpose;
 	m_laserBeams=beams;
-	memcpy(m_laserAngles, angles, sizeof(double)*m_laserBeams);
+	//memcpy(m_laserAngles, angles, sizeof(double)*m_laserBeams);
 }
 
 void ScanMatcher::setMatchingParameters
@@ -302,9 +313,8 @@ void ScanMatcher::setMatchingParameters
 	m_likelihoodSkip=likelihoodSkip;
 }
 
-double ScanMatcher::score(const ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings) const{
+double ScanMatcher::score(const ScanMatcherMap& map, const OrientedPoint& p, const ScanReading readings) const{
 	double s=0;
-	const double * angle=m_laserAngles+m_initialBeamsSkip;
 	OrientedPoint lp=p;
 	lp.x+=cos(p.theta)*m_laserPose.x-sin(p.theta)*m_laserPose.y;
 	lp.y+=sin(p.theta)*m_laserPose.x+cos(p.theta)*m_laserPose.y;
@@ -312,51 +322,58 @@ double ScanMatcher::score(const ScanMatcherMap& map, const OrientedPoint& p, con
 	unsigned int skip=0;
 	double freeDelta=map.getDelta()*m_freeCellRatio;
 
-	for (auto r = readings.begin() + m_initialBeamsSkip; r < readings.end(); r++, angle++){
+	for (auto r = readings.begin() + m_initialBeamsSkip; r < readings.end(); r++)
+	{
 		skip++;
 		skip=skip>m_likelihoodSkip?0:skip;
-		if (*r>m_usableRange) continue;
-		if (skip) continue;
-		Point phit=lp;
-		phit.x+=*r*cos(lp.theta+*angle);
-		phit.y+=*r*sin(lp.theta+*angle);
-		IntPoint iphit=map.world2map(phit);
-		Point pfree=lp;
-		pfree.x+=(*r-map.getDelta()*freeDelta)*cos(lp.theta+*angle);
-		pfree.y+=(*r-map.getDelta()*freeDelta)*sin(lp.theta+*angle);
- 		pfree=pfree-phit;
-		IntPoint ipfree=map.world2map(pfree);
-		bool found=false;
-		Point bestMu(0.,0.);
-		for (int xx=-m_kernelSize; xx<=m_kernelSize; xx++)
-		for (int yy=-m_kernelSize; yy<=m_kernelSize; yy++){
-			IntPoint pr=iphit+IntPoint(xx,yy);
-			IntPoint pf=pr+ipfree;
-			//AccessibilityState s=map.storage().cellState(pr);
-			//if (s&Inside && s&Allocated){
-				const PointAccumulator& cell=map.cell(pr);
-				const PointAccumulator& fcell=map.cell(pf);
-				if (((double)cell )> m_fullnessThreshold && ((double)fcell )<m_fullnessThreshold){
-					Point mu=phit-cell.mean();
-					if (!found){
-						bestMu=mu;
-						found=true;
-					}else
-						bestMu=(mu*mu)<(bestMu*bestMu)?mu:bestMu;
-				}
-			//}
+		if (r->quality > MIN_LIDAR_QUALITY)
+		{
+			auto l_angle = r->angle;
+			auto l_distance = r->distance;
+			if (l_distance > m_usableRange) continue;
+			if (skip) continue;
+			Point phit=lp;
+			phit.x+=l_distance * cos(lp.theta+l_angle);
+			phit.y+=l_distance*sin(lp.theta+l_angle);
+			IntPoint iphit=map.world2map(phit);
+			Point pfree=lp;
+			pfree.x+=(l_distance-map.getDelta()*freeDelta)*cos(lp.theta+l_angle);
+			pfree.y+=(l_distance-map.getDelta()*freeDelta)*sin(lp.theta+l_angle);
+			pfree=pfree-phit;
+			IntPoint ipfree=map.world2map(pfree);
+			bool found=false;
+			Point bestMu(0.,0.);
+			for (int xx=-m_kernelSize; xx<=m_kernelSize; xx++)
+			for (int yy=-m_kernelSize; yy<=m_kernelSize; yy++){
+				IntPoint pr=iphit+IntPoint(xx,yy);
+				IntPoint pf=pr+ipfree;
+				//AccessibilityState s=map.storage().cellState(pr);
+				//if (s&Inside && s&Allocated){
+					const PointAccumulator& cell=map.cell(pr);
+					const PointAccumulator& fcell=map.cell(pf);
+					if (((double)cell )> m_fullnessThreshold && ((double)fcell )<m_fullnessThreshold){
+						Point mu=phit-cell.mean();
+						if (!found){
+							bestMu=mu;
+							found=true;
+						}else
+							bestMu=(mu*mu)<(bestMu*bestMu)?mu:bestMu;
+					}
+				//}
+			}
+			if (found)
+			{
+				s+=exp(-1./m_gaussianSigma*bestMu*bestMu);
+			}
 		}
-		if (found)
-			s+=exp(-1./m_gaussianSigma*bestMu*bestMu);
 	}
 	return s;
 }
 
-unsigned int ScanMatcher::likelihoodAndScore(double& s, double& l, const ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings) const{
+unsigned int ScanMatcher::likelihoodAndScore(double& s, double& l, const ScanMatcherMap& map, const OrientedPoint& p, const ScanReading readings) const{
 	using namespace std;
 	l=0;
 	s=0;
-	const double * angle=m_laserAngles+m_initialBeamsSkip;
 	OrientedPoint lp=p;
 	lp.x+=cos(p.theta)*m_laserPose.x-sin(p.theta)*m_laserPose.y;
 	lp.y+=sin(p.theta)*m_laserPose.x+cos(p.theta)*m_laserPose.y;
@@ -366,47 +383,53 @@ unsigned int ScanMatcher::likelihoodAndScore(double& s, double& l, const ScanMat
 	unsigned int c=0;
 	double freeDelta=map.getDelta()*m_freeCellRatio;
 
-	for (auto it = readings.begin() + m_initialBeamsSkip; it != readings.end(); it++, angle++){
+	for (auto it = readings.begin() + m_initialBeamsSkip; it != readings.end(); it++)
+	{
 		skip++;
 		skip=skip>m_likelihoodSkip?0:skip;
-		if (*it>m_usableRange) continue;
-		if (skip) continue;
-		Point phit=lp;
-		phit.x+=*it*cos(lp.theta+*angle);
-		phit.y+=*it*sin(lp.theta+*angle);
-		IntPoint iphit=map.world2map(phit);
-		Point pfree=lp;
-		pfree.x+=(*it-freeDelta)*cos(lp.theta+*angle);
-		pfree.y+=(*it-freeDelta)*sin(lp.theta+*angle);
-		pfree=pfree-phit;
-		IntPoint ipfree=map.world2map(pfree);
-		bool found=false;
-		Point bestMu(0.,0.);
-		for (int xx=-m_kernelSize; xx<=m_kernelSize; xx++)
-		for (int yy=-m_kernelSize; yy<=m_kernelSize; yy++){
-			IntPoint pr=iphit+IntPoint(xx,yy);
-			IntPoint pf=pr+ipfree;
-			//AccessibilityState s=map.storage().cellState(pr);
-			//if (s&Inside && s&Allocated){
-				const PointAccumulator& cell=map.cell(pr);
-				const PointAccumulator& fcell=map.cell(pf);
-				if (((double)cell )>m_fullnessThreshold && ((double)fcell )<m_fullnessThreshold){
-					Point mu=phit-cell.mean();
-					if (!found){
-						bestMu=mu;
-						found=true;
-					}else
-						bestMu=(mu*mu)<(bestMu*bestMu)?mu:bestMu;
-				}
-			//}
-		}
-		if (found){
-			s+=exp(-1./m_gaussianSigma*bestMu*bestMu);
-			c++;
-		}
-		if (!skip){
-			double f=(-1./m_likelihoodSigma)*(bestMu*bestMu);
-			l+=(found)?f:noHit;
+		if (it->quality)
+		{
+			auto l_angle = it->angle;
+			auto l_distance = it->distance;
+			if (l_distance > m_usableRange) continue;
+			if (skip) continue;
+			Point phit=lp;
+			phit.x+=l_distance*cos(lp.theta+l_angle);
+			phit.y+=l_distance*sin(lp.theta+l_angle);
+			IntPoint iphit=map.world2map(phit);
+			Point pfree=lp;
+			pfree.x+=(l_distance-freeDelta)*cos(lp.theta+l_angle);
+			pfree.y+=(l_distance-freeDelta)*sin(lp.theta+l_angle);
+			pfree=pfree-phit;
+			IntPoint ipfree=map.world2map(pfree);
+			bool found=false;
+			Point bestMu(0.,0.);
+			for (int xx=-m_kernelSize; xx<=m_kernelSize; xx++)
+			for (int yy=-m_kernelSize; yy<=m_kernelSize; yy++){
+				IntPoint pr=iphit+IntPoint(xx,yy);
+				IntPoint pf=pr+ipfree;
+				//AccessibilityState s=map.storage().cellState(pr);
+				//if (s&Inside && s&Allocated){
+					const PointAccumulator& cell=map.cell(pr);
+					const PointAccumulator& fcell=map.cell(pf);
+					if (((double)cell )>m_fullnessThreshold && ((double)fcell )<m_fullnessThreshold){
+						Point mu=phit-cell.mean();
+						if (!found){
+							bestMu=mu;
+							found=true;
+						}else
+							bestMu=(mu*mu)<(bestMu*bestMu)?mu:bestMu;
+					}
+				//}
+			}
+			if (found){
+				s+=exp(-1./m_gaussianSigma*bestMu*bestMu);
+				c++;
+			}
+			if (!skip){
+				double f=(-1./m_likelihoodSigma)*(bestMu*bestMu);
+				l+=(found)?f:noHit;
+			}
 		}
 	}
 	return c;

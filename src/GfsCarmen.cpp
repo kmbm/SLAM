@@ -6,7 +6,6 @@
  */
 
 #include "RunConfig.h"
-#include <utils/commandline.h>
 #include <gridfastslam/gridslamprocessor.h>
 #include <configfile/configfile.h>
 #include "Runner.h"
@@ -50,6 +49,7 @@ int main(int argc, const char * const * argv)
 	double temp=0;
 	sleep(2);
 	double x=0.8, y=1;
+	rr.setPose(OrientedPoint(x, y, 0));
 	while (running)
 	{
 		const auto& l_robotPose = l_sensorsDataStorage->getRobotPose();
@@ -61,9 +61,73 @@ int main(int argc, const char * const * argv)
 		std::vector<double> vect2{3,9,9,9,9,9,9,9,9,9,8,9,9,9,9,9,9,9,9,9};
 		std::vector<double> vect3{1,9,9,9,9,9,9,9,9,9,10,9,9,9,9,9,9,9,9,9};*/
 
-		std::vector<double> vect1{.5,.9,.9,.9,.9,.9,.9,.9,.9,.9,.6,.9,.9,.9,.9,.9,.9,.9,.9,.9};
+	/*	std::vector<double> vect1{.5,.9,.9,.9,.9,.9,.9,.9,.9,.9,.6,.9,.9,.9,.9,.9,.9,.9,.9,.9};
 		std::vector<double> vect2{.3,.9,.9,.9,.9,.9,.9,.9,.9,.9,.8,.9,.9,.9,.9,.9,.9,.9,.9,.9};
-		std::vector<double> vect3{.1,.9,.9,.9,.9,.9,.9,.9,.9,.9,1,.9,.9,.9,.9,.9,.9,.9,.9,.9};
+		std::vector<double> vect3{.1,.9,.9,.9,.9,.9,.9,.9,.9,.9,1,.9,.9,.9,.9,.9,.9,.9,.9,.9};*/
+
+		std::vector<LidarDataResponse> vect1{ LidarDataResponse(1, 0,    .5),
+											   LidarDataResponse(1, 18,   .9),
+											   LidarDataResponse(1, 36,   .9),
+											   LidarDataResponse(1, 54,   .9),
+											   LidarDataResponse(1, 72,   .9),
+											   LidarDataResponse(1, 90,   .9),
+											   LidarDataResponse(1, 108,  .9),
+											   LidarDataResponse(1, 126,  .9),
+											   LidarDataResponse(1, 144,  .9),
+											   LidarDataResponse(1, 162,  .9),
+											   LidarDataResponse(1, 180,  .6),
+											   LidarDataResponse(1, 198,  .9),
+											   LidarDataResponse(1, 216,  .9),
+											   LidarDataResponse(1, 234,  .9),
+											   LidarDataResponse(1, 252,  .9),
+											   LidarDataResponse(1, 270,  .9),
+											   LidarDataResponse(1, 288,  .9),
+											   LidarDataResponse(1, 306,  .9),
+											   LidarDataResponse(1, 324,  .9),
+											   LidarDataResponse(1, 342,  .9) };
+
+		std::vector<LidarDataResponse> vect2{ LidarDataResponse(1, 0,    .3),
+											   LidarDataResponse(1, 18,   .9),
+											   LidarDataResponse(1, 36,   .9),
+											   LidarDataResponse(1, 54,   .9),
+											   LidarDataResponse(1, 72,   .9),
+											   LidarDataResponse(1, 90,   .9),
+											   LidarDataResponse(1, 108,  .9),
+											   LidarDataResponse(1, 126,  .9),
+											   LidarDataResponse(1, 144,  .9),
+											   LidarDataResponse(1, 162,  .9),
+											   LidarDataResponse(1, 180,  .8),
+											   LidarDataResponse(1, 198,  .9),
+											   LidarDataResponse(1, 216,  .9),
+											   LidarDataResponse(1, 234,  .9),
+											   LidarDataResponse(1, 252,  .9),
+											   LidarDataResponse(1, 270,  .9),
+											   LidarDataResponse(1, 288,  .9),
+											   LidarDataResponse(1, 306,  .9),
+											   LidarDataResponse(1, 324,  .9),
+											   LidarDataResponse(1, 342,  .9) };
+
+		std::vector<LidarDataResponse> vect3{ LidarDataResponse(1, 0,    .1),
+											   LidarDataResponse(1, 18,   .9),
+											   LidarDataResponse(1, 36,   .9),
+											   LidarDataResponse(1, 54,   .9),
+											   LidarDataResponse(1, 72,   .9),
+											   LidarDataResponse(1, 90,   .9),
+											   LidarDataResponse(1, 108,  .9),
+											   LidarDataResponse(1, 126,  .9),
+											   LidarDataResponse(1, 144,  .9),
+											   LidarDataResponse(1, 162,  .9),
+											   LidarDataResponse(1, 180,  1),
+											   LidarDataResponse(1, 198,  .9),
+											   LidarDataResponse(1, 216,  .9),
+											   LidarDataResponse(1, 234,  .9),
+											   LidarDataResponse(1, 252,  .9),
+											   LidarDataResponse(1, 270,  .9),
+											   LidarDataResponse(1, 288,  .9),
+											   LidarDataResponse(1, 306,  .9),
+											   LidarDataResponse(1, 324,  .9),
+											   LidarDataResponse(1, 342,  .9) };
+
 		//std::vector<double> vect2{3,9,9,9,9,9,9,9,9,9,8,9,9,9,9,9,9,9,9,9};
 		//std::vector<double> vect3{1,9,9,9,9,9,9,9,9,9,10,9,9,9,9,9,9,9,9,9}
 		//rr.setScanReading(l_sensorsDataStorage->getLidarScan()->lidarFilteredReadings);

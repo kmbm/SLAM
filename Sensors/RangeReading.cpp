@@ -70,7 +70,7 @@ unsigned int RangeReading::rawView(double* v, double density) const{
 	return static_cast<unsigned int>(size());
 
 };*/
-
+/*
 unsigned int RangeReading::activeBeams(double density) const{
 	if (density==0.)
 		return m_scanReading.size();
@@ -123,6 +123,6 @@ std::vector<Point> RangeReading::cartesianForm(double maxRange) const{
 	}
 	return cartesianPoints;
 }
-
+*/
 };
 

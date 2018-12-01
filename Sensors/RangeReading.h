@@ -10,10 +10,12 @@
 
 #include <vector>
 #include "rangesensor.h"
+#include "Lidar/LidarDataResponse.h"
 
 namespace GMapping{
 
-using ScanReading = std::vector<double>;
+#define MIN_LIDAR_QUALITY 0
+using ScanReading = std::vector<LidarDataResponse>;
 
 class RangeReading /*public SensorReading,*/// public std::vector<double>{
 {

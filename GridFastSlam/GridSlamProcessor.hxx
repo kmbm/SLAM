@@ -5,7 +5,7 @@
  *      Author: Krzysiek
  */
 
-inline void GridSlamProcessor::scanMatch(const std::vector<double> plainReading)
+inline void GridSlamProcessor::scanMatch(const ScanReading plainReading)
 {
 	double sumScore=0;
 	for (ParticleVector::iterator it=m_particles.begin(); it!=m_particles.end(); it++)
@@ -54,7 +54,7 @@ inline void GridSlamProcessor::normalize()
 	m_neff=1./m_neff;
 }
 
-inline bool GridSlamProcessor::resample(const std::vector<double> plainReading, int adaptSize, const RangeReading* )
+inline bool GridSlamProcessor::resample(const ScanReading plainReading, int adaptSize, const RangeReading* )
 {
 	bool hasResampled = false;
 

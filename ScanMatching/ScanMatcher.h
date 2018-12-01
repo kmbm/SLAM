@@ -9,6 +9,7 @@
 #define SCANMATCHING_SCANMATCHER_H_
 
 #include "PointAccumulator.h"
+#include "RangeReading.h"
 #include <Utils/Stat.h>
 #include <iostream>
 #include <vector>
@@ -22,18 +23,18 @@ class ScanMatcher{
 		typedef Covariance3 CovarianceMatrix;
 
 		ScanMatcher();
-		double optimize(OrientedPoint& pnew, const ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings) const;
+		double optimize(OrientedPoint& pnew, const ScanMatcherMap& map, const OrientedPoint& p, const ScanReading readings) const;
 
-		double registerScan(ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings);
+		double registerScan(ScanMatcherMap& map, const OrientedPoint& p, const ScanReading readings);
 		void setLaserParameters
 			(unsigned int beams, double* angles, const OrientedPoint& lpose);
 		void setMatchingParameters
 			(double urange, double range, double sigma, int kernsize, double lopt, double aopt, int iterations, double likelihoodSigma=1, unsigned int likelihoodSkip=0 );
 		void invalidateActiveArea();
-		void computeActiveArea(ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings);
+		void computeActiveArea(ScanMatcherMap& map, const OrientedPoint& p, const ScanReading readings);
 
-		double score(const ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings) const;
-		unsigned int likelihoodAndScore(double& s, double& l, const ScanMatcherMap& map, const OrientedPoint& p, const std::vector<double> readings) const;
+		double score(const ScanMatcherMap& map, const OrientedPoint& p, const ScanReading readings) const;
+		unsigned int likelihoodAndScore(double& s, double& l, const ScanMatcherMap& map, const OrientedPoint& p, const ScanReading readings) const;
 
 		static const double nullLikelihood;
 	protected:
@@ -42,7 +43,6 @@ class ScanMatcher{
 
 		/**laser parameters*/
 		unsigned int m_laserBeams;
-		double       m_laserAngles[LASER_MAXBEAMS];
 		OrientedPoint m_laserPose;
 		double m_laserMaxRange;
 		/**scan_matcher parameters*/

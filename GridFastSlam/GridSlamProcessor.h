@@ -134,9 +134,9 @@ protected:
     std::ostream& m_infoStream;
 
 private:
-    inline void scanMatch(const std::vector<double> plainReading);
+    inline void scanMatch(const ScanReading plainReading);
     inline void normalize();
-    inline bool resample(const std::vector<double> plainReading, int adaptParticles, const RangeReading* rr=0);
+    inline bool resample(const ScanReading plainReading, int adaptParticles, const RangeReading* rr=0);
     void updateTreeWeights(bool weightsAlreadyNormalized = false);
     void resetTree();
     double propagateWeights();

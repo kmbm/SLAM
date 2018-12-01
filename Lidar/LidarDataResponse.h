@@ -33,6 +33,13 @@ struct LidarDataResponse
 		distance = 0;
 	}
 
+	LidarDataResponse(int p_quality, float p_angle, float p_distance)
+	{
+		quality = p_quality;
+		angle = p_angle;
+		distance = p_distance;
+	}
+
 	LidarDataResponse(char* p_responseBuffer)
 	{
 		quality = p_responseBuffer[0] >> 2;
