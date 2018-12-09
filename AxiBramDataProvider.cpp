@@ -41,9 +41,9 @@ void AxiBramDataProvider::transferData()
 void AxiBramDataProvider::updatePosition()
 {
 	m_currentPosition = readPosition() - m_initialPosition;
-	std::cout << m_currentPosition << std::endl;
+	RobotCoordinates l_currentPositionInMeters = m_currentPosition / ENCODER_IMPULSE_TO_METERS;
 	m_mutex.lock();
-	m_sensorsDataStorage->getRobotPose()->setCoordinates(m_currentPosition);
+	m_sensorsDataStorage->getRobotPose()->setCoordinates(l_currentPositionInMeters);
 	m_mutex.unlock();
 
 }
@@ -78,8 +78,6 @@ int AxiBramDataProvider::readData(int p_startAddress)
 	{
 		l_buffer[l_it] = m_axiBram->readData(p_startAddress + l_it);
 	}
-	std::cout<<(int)l_buffer[0]<<" " <<(int)l_buffer[1]<<" " <<(int)l_buffer[2]<<" " <<(int)l_buffer[3] << " ";//<<(int)l_buffer[4]<<" " <<(int)l_buffer[5]<<" " <<(int)l_buffer[6]<<" " <<(int)l_buffer[7]<<std::endl;
-
 	return buffToInteger(l_buffer);
 }
 

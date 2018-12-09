@@ -29,6 +29,21 @@ inline RobotCoordinates operator-(const RobotCoordinates& p_lhs, const RobotCoor
 	return l_result;
 }
 
+inline RobotCoordinates operator/(const RobotCoordinates& p_lhs, double p_value)
+{
+	RobotCoordinates l_result;
+	l_result.x = p_lhs.x / p_value;
+	l_result.y = p_lhs.y / p_value;
+	return l_result;
+}
+
+inline std::ostream& operator<<(std::ostream& os, const RobotCoordinates& data)
+{
+	std::cout.precision(10);
+    os << "Robot Position: x = " << data.x << " y = " << data.y << std::endl;
+    return os;
+}
+
 struct RobotPose{
 	void setAngle(int p_angle)
 	{
@@ -36,8 +51,10 @@ struct RobotPose{
 		angle = p_angle;
 		m_mutex.unlock();
 	}
+
 	void setCoordinates(RobotCoordinates p_robotCoordinates)
 	{
+		std::cerr << p_robotCoordinates << std::endl;
 		m_mutex.lock();
 		x = p_robotCoordinates.x;
 		y = p_robotCoordinates.y;

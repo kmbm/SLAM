@@ -16,21 +16,14 @@
 #include <mutex>
 #include <iostream>
 
-
-
-inline std::ostream& operator<<(std::ostream& os, const RobotCoordinates& data)
-{
-	std::cout.precision(10);
-    os << "Robot Position: x = " << data.x << " y = " << data.y << std::endl;
-    return os;
-}
-
 const int BRAM_POSITION_X_ADDRESS = 8;
 const int BRAM_POSITION_Y_ADDRESS = 12;
 
 const int BRAM_Z_AXIS_ANGLE_ADDRESS = 1028;
 const int BRAM_SPEED_ADDRESS = 1032;
 const int BRAM_ROTATION_ADDRESS = 1036;
+
+const double ENCODER_IMPULSE_TO_METERS = 2400;  //768 res; 36cm
 
 class AxiBramDataProvider {
 public:
@@ -39,7 +32,6 @@ public:
 	void transferData();
 
 	void setRobotOrientation(double);
-	RobotCoordinates getPosition(){ return m_currentPosition; }
 
 private:
 	int readData(int p_startAddress);
