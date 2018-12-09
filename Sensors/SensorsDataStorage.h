@@ -21,6 +21,14 @@ struct RobotCoordinates
 	double y;
 };
 
+inline RobotCoordinates operator-(const RobotCoordinates& p_lhs, const RobotCoordinates& p_rhs)
+{
+	RobotCoordinates l_result;
+	l_result.x = p_lhs.x - p_rhs.x;
+	l_result.y = p_lhs.y - p_rhs.y;
+	return l_result;
+}
+
 struct RobotPose{
 	void setAngle(int p_angle)
 	{

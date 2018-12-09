@@ -38,14 +38,13 @@ public:
 
 	void transferData();
 
-	//void setDirection(RobotDirection p_direction);
 	void setRobotOrientation(double);
 	RobotCoordinates getPosition(){ return m_currentPosition; }
 
 private:
-	RobotCoordinates countPositionDelta(const RobotCoordinates&, const RobotCoordinates&);
 	int readData(int p_startAddress);
-	int readPosition();
+	void updatePosition();
+	RobotCoordinates readPosition();
 	int buffToInteger(char * p_buffer);
 	std::atomic<double> m_zAxisAngle;
 
@@ -59,6 +58,7 @@ private:
 	int m_robotRotation;
 	RobotCoordinates m_currentPosition;
 	RobotCoordinates m_previousPosition;
+	RobotCoordinates m_initialPosition;
 };
 
 #endif /* AXIBRAMDATAPROVIDER_H_ */

@@ -12,12 +12,10 @@ AxiBramDataProvider::AxiBramDataProvider(std::shared_ptr<SensorsDataStorage>& p_
 	m_motorController(std::make_shared<MotorController>(m_axiBram)),
 	m_direction(FORWARD),
 	m_sensorsDataStorage(p_sensorsDataStorage)
-{}
-/*
-void AxiBramDataProvider::setDirection(RobotDirection p_direction)
 {
-	m_direction = p_direction;
-}*/
+	m_initialPosition = readPosition();
+	std::cerr << "Initial robot position: " << m_initialPosition;
+}
 
 void AxiBramDataProvider::setRobotOrientation(double p_zAxisAngle)
 {
@@ -37,33 +35,40 @@ void AxiBramDataProvider::transferData()
 
 	m_axiBram->writeData(static_cast<int>(m_robotRotation), BRAM_ROTATION_ADDRESS);
 
-	readPosition();
+	updatePosition();
 }
 
-int AxiBramDataProvider::readPosition()
+void AxiBramDataProvider::updatePosition()
 {
-	RobotCoordinates l_lastDelta = countPositionDelta(m_currentPosition, m_previousPosition);
-	usleep(500000);
-	m_previousPosition = m_currentPosition;
-	m_currentPosition.x = readData(BRAM_POSITION_X_ADDRESS);
-	m_currentPosition.y = readData(BRAM_POSITION_Y_ADDRESS);
-	usleep(500000);
-
-	if (abs(m_currentPosition.x - m_previousPosition.x) > 10000)
-	{
-		m_currentPosition.x = m_previousPosition.x + l_lastDelta.x;
-		std::cout << "BUG X";
-	}
-	if (abs(m_currentPosition.y - m_previousPosition.y) > 10000)
-	{
-		m_currentPosition.y = m_previousPosition.y + l_lastDelta.y;
-		std::cout << "BUG Y";
-
-	}
+	m_currentPosition = readPosition() - m_initialPosition;
 	std::cout << m_currentPosition << std::endl;
 	m_mutex.lock();
 	m_sensorsDataStorage->getRobotPose()->setCoordinates(m_currentPosition);
 	m_mutex.unlock();
+
+}
+
+RobotCoordinates AxiBramDataProvider::readPosition()
+{
+	RobotCoordinates l_lastDelta = m_currentPosition - m_previousPosition;
+	RobotCoordinates l_currentPosition;
+	usleep(500000);
+	m_previousPosition = m_currentPosition;
+	l_currentPosition.x = readData(BRAM_POSITION_X_ADDRESS);
+	l_currentPosition.y = readData(BRAM_POSITION_Y_ADDRESS);
+	usleep(500000);
+
+	if (abs(l_currentPosition.x - m_previousPosition.x) > 10000)
+	{
+		l_currentPosition.x = m_previousPosition.x + l_lastDelta.x;
+		std::cout << "BUG X";
+	}
+	if (abs(l_currentPosition.y - m_previousPosition.y) > 10000)
+	{
+		l_currentPosition.y = m_previousPosition.y + l_lastDelta.y;
+		std::cout << "BUG Y";
+	}
+	return l_currentPosition;
 }
 
 int AxiBramDataProvider::readData(int p_startAddress)
@@ -73,7 +78,7 @@ int AxiBramDataProvider::readData(int p_startAddress)
 	{
 		l_buffer[l_it] = m_axiBram->readData(p_startAddress + l_it);
 	}
-	std::cout<<(int)l_buffer[0]<<" " <<(int)l_buffer[1]<<" " <<(int)l_buffer[2]<<" " <<(int)l_buffer[3];//<<(int)l_buffer[4]<<" " <<(int)l_buffer[5]<<" " <<(int)l_buffer[6]<<" " <<(int)l_buffer[7]<<std::endl;
+	std::cout<<(int)l_buffer[0]<<" " <<(int)l_buffer[1]<<" " <<(int)l_buffer[2]<<" " <<(int)l_buffer[3] << " ";//<<(int)l_buffer[4]<<" " <<(int)l_buffer[5]<<" " <<(int)l_buffer[6]<<" " <<(int)l_buffer[7]<<std::endl;
 
 	return buffToInteger(l_buffer);
 }
@@ -86,13 +91,4 @@ int AxiBramDataProvider::buffToInteger(char * p_buffer)
 				   static_cast<unsigned char>(p_buffer[0]));
 
     return l_result;
-}
-
-RobotCoordinates AxiBramDataProvider::countPositionDelta(const RobotCoordinates& p_lhs, const RobotCoordinates& p_rhs)
-{
-	RobotCoordinates l_delta;
-	l_delta.x = p_lhs.x - p_rhs.y;
-	l_delta.y = p_lhs.y - p_rhs.y;
-
-    return l_delta;
 }
