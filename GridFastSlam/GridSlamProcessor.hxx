@@ -66,7 +66,7 @@ inline bool GridSlamProcessor::resample(const ScanReading plainReading, int adap
 
 	if (m_neff<m_resampleThreshold*m_particles.size())
 	{
-		uniform_resampler<double, double> resampler;
+		uniform_resampler resampler;
 		m_indexes=resampler.resampleIndexes(m_weights, adaptSize);
 
 		//BEGIN: BUILDING TREE

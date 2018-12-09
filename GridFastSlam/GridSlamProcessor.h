@@ -13,7 +13,7 @@
 #include <fstream>
 #include <vector>
 #include <deque>
-#include <particlefilter/particlefilter.h>
+#include <Particlefilter/Particlefilter.h>
 #include <utils/point.h>
 #include <Sensors/RangeSensor.h>
 #include <Sensors/RangeReading.h>

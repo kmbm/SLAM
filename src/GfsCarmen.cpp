@@ -43,6 +43,7 @@ int main(int argc, const char * const * argv)
 	auto l_systemRunner = std::make_unique<Runner>(l_sensorsDataStorage);
 	std::thread GyroscopeThread(l_systemRunner->gyroscopeThread());
 	std::thread LidarThread(l_systemRunner->lidarScan());
+	//std::thread MapGeneratorThread(l_systemRunner->generateMap());
 
 	double temp=0;
 	sleep(2);
@@ -176,6 +177,7 @@ int main(int argc, const char * const * argv)
 
 	GyroscopeThread.join();
 	LidarThread.join();
+	//MapGeneratorThread.join();
 
 	return 0;
 }
